@@ -1,6 +1,4 @@
 streamlit
 pandas
+numpy
 openpyxl
-xlsxwriter
-smtplib
-email
