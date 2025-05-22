@@ -21,37 +21,8 @@ EXCEL_PATH = Path("Invoices.xlsx")
 EMAIL_UPLOAD_PASSWORD = "PaymentMailSenderDashboard"
 
 
-connection_string =(
-    "DRIVER= {ODBC Driver 17 for SQL Server};"
-    "SERVER=(localdb)\\MSSQLLocalDB;"
-    "DATABASE= Payment_Email;"
-    "Trusted_Connection=yes;"
-)
-
-def get_db_connection():
-    return pyodbc.connect(connection_string)
-
-def already_sent(PartyCode, InvoiceNo):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = "SELECT * FROM dbo.EmailLogs WHERE PartyCode = ? AND InvoiceNo = ?"
-    cursor.execute(query, (PartyCode,InvoiceNo))
-    result = cursor.fetchone()
-    cursor.close()
-    conn.close()
-    return result is not None
-
-def record_sent_email(PartyCode, PartyName, InvoiceNo):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    query = "INSERT INTO dbo.EmailLogs (PartyCode, PartyName, InvoiceNo, TimeStamp) VALUES (?, ?, ?, ?)"
-    cursor.execute(query, (PartyCode, PartyName, InvoiceNo, datetime.now()))
-    conn.commit()
-    cursor.close()
-    conn.close()
 
 
-    
 # Sample Excel creation function (for download button)
 def create_sample_excel():
     sample_payment = pd.DataFrame({
@@ -489,126 +460,104 @@ if uploaded_file:
 
 
         if st.button("Send Emails"):
-            log_lines = []
+            log_lines = []  # 🔹 Start collecting log lines
             sent_count = 0
             failed_count = 0
-            skip_count = 0
 
-    log_lines.append("=== Emails Sent Successfully ===")
+            log_lines.append("=== Emails Sent Successfully ===")
 
-    for entry in matched_results:
-        party_code = entry['party_code']
-        party_name = next(
-            (e['PartyName'] for e in party_emails if e['PartyCode'] == party_code),
-            'Unknown Party'
-        )
-        invoice_nos = [row.get('Inv. No.', '') for row in entry['payments'] if row.get('Inv. No.', '')]
+            for entry in matched_results:
+                html_body = generate_email_body(entry['party_code'], entry['payments'], entry['debits'])
+                try:
+                    party_name = next(
+                        (e['PartyName'] for e in party_emails if e['PartyCode'] == entry['party_code']),
+                        'Unknown Party'
+                    )
+                    send_email(gmail_user, gmail_pwd, entry['emails'], f"Payment Reconciliation for {party_name}", html_body)
+                    st.success(f"Email sent to {party_name} ({entry['party_code']})")
+                    log_lines.append(f"Party Code: {entry['party_code']} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])}")
+                    sent_count += 1
+                except Exception as e:
+                    st.error(f"Failed for {entry['party_code']}: {e}")
+                    log_lines.append(f"FAILED: {entry['party_code']} | Error: {e}")
+                    failed_count += 1
 
-        # Skip if any invoice was already emailed
-        if any(already_sent(party_code, inv) for inv in invoice_nos):
-            st.warning(f"SKIPPED (Already Sent): {party_code} - {party_name}")
-            log_lines.append(f"SKIPPED: {party_code} — Already emailed for at least one invoice")
-            skip_count += 1
-            continue
+            # Add skipped parties
+            log_lines.append("\n=== Skipped Parties ===")
+            if skips:
+                for line in skips:
+                    log_lines.append(line)
+            else:
+                log_lines.append("None")
 
-        html_body = generate_email_body(party_code, entry['payments'], entry['debits'])
+            # Write log to file
+            with open("FinalEmailLog.txt", "w", encoding="utf-8") as log_file:
+                for line in log_lines:
+                    log_file.write(line + "\n")
 
-        try:
-            send_email(
-                gmail_user,
-                gmail_pwd,
-                entry['emails'],
-                f"Payment Reconciliation for {party_name}",
-                html_body
-            )
-
-            st.success(f"✅ Email sent to {party_name} ({party_code})")
-            log_lines.append(f"Party Code: {party_code} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])}")
-            sent_count += 1
-
-            # Log each invoice sent to DB
-            for inv in invoice_nos:
-                record_sent_email(party_code, party_name, inv)
-
-        except Exception as e:
-            st.error(f"❌ Failed for {party_code}: {e}")
-            log_lines.append(f"FAILED: {party_code} | Error: {e}")
-            failed_count += 1
-
-    # Add skipped logs
-        log_lines.append("\n=== Skipped Parties ===")
-        if skips:
-            for line in skips:
-                log_lines.append(line)
-                skip_count += 1
-        else:
-            log_lines.append("None")
-
-        # Write to log file
-        with open("FinalEmailLog.txt", "w", encoding="utf-8") as log_file:
-            for line in log_lines:
-                log_file.write(line + "\n")
-
-    # Final summary
-    st.success(f"✅ Emails sent: {sent_count}, ❌ Failed: {failed_count}, ⏭️ Skipped: {skip_count}")
+            # Final result summary
+            st.success(f"✅ Emails sent: {sent_count}, Failed: {failed_count}, Skipped: {len(skips)}")
 
             # Download log
+            with open("FinalEmailLog.txt", "rb") as log_file:
+                st.download_button(
+                    label="📄 Download Final Email Log",
+                    data=log_file,
+                    file_name="FinalEmailLog.txt",
+                    mime="text/plain"
+                )
 st.subheader("📊 Convert Final Email Log to Excel")
 
-try:
-    if os.path.exists("FinalEmailLog.txt"):
-        with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
-            lines = f.readlines()
+if os.path.exists("FinalEmailLog.txt"):
+    with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
+        lines = f.readlines()
 
-        # Create Excel in memory
-        output = BytesIO()
-        workbook = xlsxwriter.Workbook(output)
-        worksheet = workbook.add_worksheet("Email Log")
+    # Create Excel in memory
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet("Email Log")
 
-        # Header row
-        headers = ["Status", "Party Code", "Party Name", "Emails / Error"]
-        for col, header in enumerate(headers):
-            worksheet.write(0, col, header)
+    # Header row
+    headers = ["Status", "Party Code", "Party Name", "Emails / Error"]
+    for col, header in enumerate(headers):
+        worksheet.write(0, col, header)
 
-        row_num = 1
+    row_num = 1
 
-        for line in lines:
-            line = line.strip()
+    for line in lines:
+        line = line.strip()
 
-            if line.startswith("Party Code:"):
-                parts = line.replace("Party Code:", "").split("|")
-                party_code = parts[0].strip()
-                party_name = parts[1].replace("Party Name:", "").strip() if len(parts) > 1 else ""
-                emails = parts[2].replace("Emails:", "").strip() if len(parts) > 2 else ""
-                worksheet.write_row(row_num, 0, ["SENT", party_code, party_name, emails])
-                row_num += 1
+        if line.startswith("Party Code:"):
+            # Successful email sent
+            parts = line.replace("Party Code:", "").split("|")
+            party_code = parts[0].strip()
+            party_name = parts[1].replace("Party Name:", "").strip() if len(parts) > 1 else ""
+            emails = parts[2].replace("Emails:", "").strip() if len(parts) > 2 else ""
+            worksheet.write_row(row_num, 0, ["SENT", party_code, party_name, emails])
+            row_num += 1
 
-            elif line.startswith("FAILED:"):
-                parts = line.replace("FAILED:", "").split("|")
-                party_code = parts[0].strip()
-                error = parts[1].replace("Error:", "").strip() if len(parts) > 1 else ""
-                worksheet.write_row(row_num, 0, ["FAILED", party_code, "", error])
-                row_num += 1
+        elif line.startswith("FAILED:"):
+            parts = line.replace("FAILED:", "").split("|")
+            party_code = parts[0].strip()
+            error = parts[1].replace("Error:", "").strip() if len(parts) > 1 else ""
+            worksheet.write_row(row_num, 0, ["FAILED", party_code, "", error])
+            row_num += 1
 
-            elif line.startswith("SKIPPED:"):
-                worksheet.write_row(row_num, 0, ["SKIPPED", "", "", line])
-                row_num += 1
+        elif line.startswith("SKIPPED:"):
+            worksheet.write_row(row_num, 0, ["SKIPPED", "", "", line])
+            row_num += 1
 
-        workbook.close()
-        output.seek(0)
+    workbook.close()
+    output.seek(0)
 
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        filename = f"FinalEmailLog_{timestamp}.xlsx"
+    # Download as Excel
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"FinalEmailLog_{timestamp}.xlsx"
 
-        st.download_button(
-            label="📥 Download Log as Excel",
-            data=output,
-            file_name=filename,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-    else:
-        st.info("📄 No FinalEmailLog.txt found yet. Please send emails first.")
-except Exception as e:
-    st.error(f"Error reading or creating Excel log: {e}")
-
+    st.download_button(
+        label="📥 Download Log as Excel",
+        data=output,
+        file_name=filename,
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
     
