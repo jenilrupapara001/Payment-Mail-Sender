@@ -8,7 +8,7 @@ from email.mime.text import MIMEText
 from pathlib import Path
 import xlsxwriter
 import hashlib
-import pyodbc
+
 import webbrowser
 from io import BytesIO
 from openpyxl import Workbook
