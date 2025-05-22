@@ -90,9 +90,6 @@ EMAIL_TEMPLATE = """
     </table>
 
     <!-- Debit Note section will only appear if replaced -->
-
-   
-  
   </body>
 </html>
 """
@@ -313,9 +310,13 @@ def generate_email_body(party_code, payment_rows, debit_rows):
 
     # Closing message
     html_body = html_body.replace(
-    '<p>Let us know if you have any questions regarding this reconciliation.</p>',
-    '<p>If you have any concerns or questions regarding this summary, please raise them within 7 days of receiving this email. After this period, no further action will be taken.</p>'
-)
+        '<p>Let us know if you have any questions regarding this reconciliation.</p>',
+    '''
+    <p><strong>Important:</strong> If you have any concerns or questions regarding this summary, please raise them within 7 days of receiving this email. After this period, no further action will be taken.</p>
+    <br>
+    <p>Best Regards,<br>Your Accounts Team</p>
+    '''
+   )
 
    
 
@@ -473,7 +474,13 @@ if uploaded_file:
                         (e['PartyName'] for e in party_emails if e['PartyCode'] == entry['party_code']),
                         'Unknown Party'
                     )
-                    send_email(gmail_user, gmail_pwd, entry['emails'], f"Payment Reconciliation for {party_name}", html_body)
+                    send_email(
+                    gmail_user,
+                    gmail_pwd,
+                    entry['emails'],
+                    f"Payment Reconciliation for {entry['party_code']} - {party_name}",
+                    html_body
+                    )    
                     st.success(f"Email sent to {party_name} ({entry['party_code']})")
                     log_lines.append(f"Party Code: {entry['party_code']} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])}")
                     sent_count += 1
