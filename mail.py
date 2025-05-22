@@ -553,65 +553,62 @@ if uploaded_file:
     st.success(f"✅ Emails sent: {sent_count}, ❌ Failed: {failed_count}, ⏭️ Skipped: {skip_count}")
 
             # Download log
-with open("FinalEmailLog.txt", "rb") as log_file:
-                st.download_button(
-                    label="📄 Download Final Email Log",
-                    data=log_file,
-                    file_name="FinalEmailLog.txt",
-                    mime="text/plain"
-                )
 st.subheader("📊 Convert Final Email Log to Excel")
 
-if os.path.exists("FinalEmailLog.txt"):
-    with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
-        lines = f.readlines()
+try:
+    if os.path.exists("FinalEmailLog.txt"):
+        with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
-    # Create Excel in memory
-    output = BytesIO()
-    workbook = xlsxwriter.Workbook(output)
-    worksheet = workbook.add_worksheet("Email Log")
+        # Create Excel in memory
+        output = BytesIO()
+        workbook = xlsxwriter.Workbook(output)
+        worksheet = workbook.add_worksheet("Email Log")
 
-    # Header row
-    headers = ["Status", "Party Code", "Party Name", "Emails / Error"]
-    for col, header in enumerate(headers):
-        worksheet.write(0, col, header)
+        # Header row
+        headers = ["Status", "Party Code", "Party Name", "Emails / Error"]
+        for col, header in enumerate(headers):
+            worksheet.write(0, col, header)
 
-    row_num = 1
+        row_num = 1
 
-    for line in lines:
-        line = line.strip()
+        for line in lines:
+            line = line.strip()
 
-        if line.startswith("Party Code:"):
-            # Successful email sent
-            parts = line.replace("Party Code:", "").split("|")
-            party_code = parts[0].strip()
-            party_name = parts[1].replace("Party Name:", "").strip() if len(parts) > 1 else ""
-            emails = parts[2].replace("Emails:", "").strip() if len(parts) > 2 else ""
-            worksheet.write_row(row_num, 0, ["SENT", party_code, party_name, emails])
-            row_num += 1
+            if line.startswith("Party Code:"):
+                parts = line.replace("Party Code:", "").split("|")
+                party_code = parts[0].strip()
+                party_name = parts[1].replace("Party Name:", "").strip() if len(parts) > 1 else ""
+                emails = parts[2].replace("Emails:", "").strip() if len(parts) > 2 else ""
+                worksheet.write_row(row_num, 0, ["SENT", party_code, party_name, emails])
+                row_num += 1
 
-        elif line.startswith("FAILED:"):
-            parts = line.replace("FAILED:", "").split("|")
-            party_code = parts[0].strip()
-            error = parts[1].replace("Error:", "").strip() if len(parts) > 1 else ""
-            worksheet.write_row(row_num, 0, ["FAILED", party_code, "", error])
-            row_num += 1
+            elif line.startswith("FAILED:"):
+                parts = line.replace("FAILED:", "").split("|")
+                party_code = parts[0].strip()
+                error = parts[1].replace("Error:", "").strip() if len(parts) > 1 else ""
+                worksheet.write_row(row_num, 0, ["FAILED", party_code, "", error])
+                row_num += 1
 
-        elif line.startswith("SKIPPED:"):
-            worksheet.write_row(row_num, 0, ["SKIPPED", "", "", line])
-            row_num += 1
+            elif line.startswith("SKIPPED:"):
+                worksheet.write_row(row_num, 0, ["SKIPPED", "", "", line])
+                row_num += 1
 
-    workbook.close()
-    output.seek(0)
+        workbook.close()
+        output.seek(0)
 
-    # Download as Excel
-    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"FinalEmailLog_{timestamp}.xlsx"
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        filename = f"FinalEmailLog_{timestamp}.xlsx"
 
-    st.download_button(
-        label="📥 Download Log as Excel",
-        data=output,
-        file_name=filename,
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
+        st.download_button(
+            label="📥 Download Log as Excel",
+            data=output,
+            file_name=filename,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+    else:
+        st.info("📄 No FinalEmailLog.txt found yet. Please send emails first.")
+except Exception as e:
+    st.error(f"Error reading or creating Excel log: {e}")
+
     
