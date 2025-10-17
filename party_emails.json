@@ -1,27 +1,1544 @@
 [
   {
     "PartyCode": "101",
-    "Email": "bharvitaseller@gmail.com,anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in",
-    "PartyName": "BHARVITA"
+    "Email": "bharvitaseller@gmail.com",
+    "PartyName": "APSARA DESIGNER",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "105",
+    "Email": "krishnatex19@gmail.com",
+    "PartyName": "JATRIQQ",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
   },
   {
     "PartyCode": "106",
-    "Email": "sarahadesigner66@gmail.com,anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in",
-    "PartyName": "NIREN ENTERPRISE"
+    "Email": "sarahadesigner66@gmail.com",
+    "PartyName": "NIREN ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "107",
+    "Email": "sbtraders2183@gmail.com",
+    "PartyName": "NECWA",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "108",
+    "Email": "Vendorcocoblu@easysell.in",
+    "PartyName": "WILLFE",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "109",
+    "Email": "bhagvanart@gmail.com",
+    "PartyName": "ZWAB",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "110",
+    "Email": "rooshant4@gmail.com",
+    "PartyName": "ROYALICA FASHION",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "111",
+    "Email": "vaniyaenterprise@gmail.com",
+    "PartyName": "FABIAN FASHION",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
   },
   {
     "PartyCode": "117",
-    "Email": "fabricorn7@gmail.com,anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in",
-    "PartyName": "Fabricon"
+    "Email": "fabricorn7@gmail.com",
+    "PartyName": "FABRICON",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "118",
+    "Email": "krishivent41@gmail.com",
+    "PartyName": "DCLUB",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
   },
   {
     "PartyCode": "119",
-    "Email": "cjenterprise111@gmail.com,anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in",
-    "PartyName": "C.J.ENTERPRISE"
+    "Email": "cjenterprise111@gmail.com",
+    "PartyName": "C.J.ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
   },
   {
     "PartyCode": "120",
-    "Email": "navlik2021@gmail.com,anjali.singh@brandcentral.in,sahil.pawar@brandcentral.in,sandip@brandcentral.in",
-    "PartyName": "NAVLIK"
+    "Email": "navlik2021@gmail.com",
+    "PartyName": "NAVLIK",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "121",
+    "Email": "vardha.amazon@gmail.com",
+    "PartyName": "VARDHA",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "122",
+    "Email": "Royalexport4044@gmail.com",
+    "PartyName": "ROYAL EXPORT",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "122S",
+    "Email": "Sheetalassociates1616@gmail.com",
+    "PartyName": "SHEETAL ASSOCIATES",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "123",
+    "Email": "aaraarapparels@gmail.com",
+    "PartyName": "PRETTIFY",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "124",
+    "Email": "prabodhamcreation123@gmail.com",
+    "PartyName": "SFT",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "125",
+    "Email": "divineinternational009@gmail.com",
+    "PartyName": "DIVINE INTERNATIONAL TRADING",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "126",
+    "Email": "harikrushnacreation99@gmail.com",
+    "PartyName": "FOXDX",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "127",
+    "Email": "tejanialpesh@gmail.com",
+    "PartyName": "MORE & MORE",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "128",
+    "Email": "maulikkikaniamazon@gmail.com",
+    "PartyName": "BAGADBILLO",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "129",
+    "Email": "amziracare@gmail.com",
+    "PartyName": "N.B.F FASHION",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "130",
+    "Email": "orlinint2018@gmail.com",
+    "PartyName": "ORLIN",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "131",
+    "Email": "swadesistuffamazon@gmail.com",
+    "PartyName": "SWADESI STUFF",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "132",
+    "Email": "nizafashion777@gmail.com",
+    "PartyName": "NIZA FASHION",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "135",
+    "Email": "online@rachnagroup.in",
+    "PartyName": "AARZA",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "136",
+    "Email": "fashion2wear.fab@gmail.com",
+    "PartyName": "FASHION2WEAR",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "137",
+    "Email": "avinashsavaliya789@gmail.com",
+    "PartyName": "FELIZ THE DESIGNER STUDIO",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "138",
+    "Email": "Vritticreation2021@gmail.com",
+    "PartyName": "SATPURUSH",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "139",
+    "Email": "Ushabhalala01@gmail.com",
+    "PartyName": "INDO PRIMO",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "140",
+    "Email": "anelitetech@gmail.com",
+    "PartyName": "ANEMONE",
+    "CC": "anjali.singh@brandcentral.in,meet.damakia@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "141",
+    "Email": "Alphawing963@gmail.com",
+    "PartyName": "WRYER",
+    "CC": "anjali.singh@brandcentral.in,meet.damakia@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "142",
+    "Email": "wholesale@laxmipati.com",
+    "PartyName": "LAXMIPATI SAREES",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "143",
+    "Email": "faslaproducts@gmail.com",
+    "PartyName": "FASLA",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "144",
+    "Email": "mohitvaghasiya74@gmail.com",
+    "PartyName": "KROYWEN",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "145",
+    "Email": "rashmin.thummar@gmail.com",
+    "PartyName": "NEEAH",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "146",
+    "Email": "B2B02@SUBHASHSAREES.COM",
+    "PartyName": "SHUBASH",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "147",
+    "Email": "kedarfab33@gmail.com",
+    "PartyName": "KEDAR FAB",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "149",
+    "Email": "finivobanking@gmail.com",
+    "PartyName": "FINIVO FASHION",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "150",
+    "Email": "zombomhelp@gmail.com",
+    "PartyName": "ZOMBOM",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "151",
+    "Email": "decisivefitnessindia@gmail.com",
+    "PartyName": "DECISIVE",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "152",
+    "Email": "angelfstudio@gmail.com",
+    "PartyName": "ANGEL F STUDIO",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "154",
+    "Email": "mahaveerenterprise69@gmail.com",
+    "PartyName": "DIVERSIFY",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "155",
+    "Email": "aretefnl.retail@gmail.com",
+    "PartyName": "TOON TOON",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "156",
+    "Email": "storetagcare@gmail.com",
+    "PartyName": "ZARTHA",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "157",
+    "Email": "deelmoecommerce@gmail.com",
+    "PartyName": "DEELMO",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "158",
+    "Email": "siddharthimpexindia@gmail.com",
+    "PartyName": "TRENDIF",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "159",
+    "Email": "info@jainamoverseas.com",
+    "PartyName": "MERIRA",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "160",
+    "Email": "alyjohnn@gmail.com",
+    "PartyName": "ALYJOHN",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "161",
+    "Email": "spfashiononline@gmail.com",
+    "PartyName": "BESIX",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "162",
+    "Email": "wholesale.kart01@gmail.com",
+    "PartyName": "KRIJO",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "163",
+    "Email": "aashatank123@gmail.com",
+    "PartyName": "BLOOD PANTHER",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "164",
+    "Email": "malivijay1818@gmail.com",
+    "PartyName": "FASHION GALLERY",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "165",
+    "Email": "azharifashion20@gmail.com",
+    "PartyName": "ALISBA",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "166",
+    "Email": "acinosenterprise@gmail.com",
+    "PartyName": "A-CINOS",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "167",
+    "Email": "crush.ecommerce@gmail.com",
+    "PartyName": "FIFTH ANFOLD",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "168",
+    "Email": "thalasiknitfab@gmail.com",
+    "PartyName": "THALASI",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "169",
+    "Email": "viveraonline@gmail.com",
+    "PartyName": "VAIRAGEE",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "170",
+    "Email": "ekasyabrand@gmail.com",
+    "PartyName": "EKASYA",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "171",
+    "Email": "deklook2024@gmail.com",
+    "PartyName": "DEKLOOK",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "172",
+    "Email": "novus.knitting@gmail.com",
+    "PartyName": "VIMLA PRINTS",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "173",
+    "Email": "deemoonecommerce@gmail.com",
+    "PartyName": "DEEMOON",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "174",
+    "Email": "yaanaa1995@gmail.com",
+    "PartyName": "YAANA",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "175",
+    "Email": "jignesh.gajera123456@gmail.com",
+    "PartyName": "KALP ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "176",
+    "Email": "kpfashion13@gmail.com",
+    "PartyName": "KALUDI FASHION",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "177",
+    "Email": "niddhilace9129@gmail.com",
+    "PartyName": "DHYEY FASHION",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "178",
+    "Email": "colebrook896@gmail.com",
+    "PartyName": "COLEBROOK",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "179",
+    "Email": "suparsleeve11@gmail.com",
+    "PartyName": "SUPPAR SLEAVE",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "180",
+    "Email": "ecoma@uniplanetstore.com",
+    "PartyName": "UNIPLANET STORE",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "181",
+    "Email": "qlonz.store@gmail.com",
+    "PartyName": "REBELIFY",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "182",
+    "Email": "bluedove.creation@gmail.com",
+    "PartyName": "KADIYU",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "183",
+    "Email": "devcreation995@gmail.com",
+    "PartyName": "SPINIFY",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "184",
+    "Email": "Vinarifab@gmail.com",
+    "PartyName": "SHIVLEELA",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "185",
+    "Email": "Vinarifab@gmail.com",
+    "PartyName": "CHOTI BAHU",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "186",
+    "Email": "brownabsindia@gmail.com",
+    "PartyName": "UTHAMMA",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "187",
+    "Email": "Yaganindia@gmail.com",
+    "PartyName": "YAGAN",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "188",
+    "Email": "Mahebo772@gmail.com",
+    "PartyName": "MAHEBO",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "189",
+    "Email": "royalscoutbanking@gmail.com",
+    "PartyName": "ROYALSCOUT",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "190",
+    "Email": "macsivobanking@gmail.com",
+    "PartyName": "MACSIVO",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "191",
+    "Email": "skenterprise712@gmail.com",
+    "PartyName": "LERKIZA",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "192",
+    "Email": "nplash.fashion2316@gmail.com",
+    "PartyName": "JEMNY IMPEX",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "193",
+    "Email": "nena.fashion2315@gmail.com",
+    "PartyName": "ATIKSH",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "194",
+    "Email": "sareeslatestdesigner@gmail.com",
+    "PartyName": "SUKETA",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "196",
+    "Email": "dskstudio9@gmail.com",
+    "PartyName": "FELIX",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "197",
+    "Email": "ethnic4you732@gmail.com",
+    "PartyName": "MEMORE",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "198",
+    "Email": "rahuldesai00017@gmail.com",
+    "PartyName": "GUFRINA",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "199",
+    "Email": "riekawestenwer@gmail.com",
+    "PartyName": "RIEKA",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "200",
+    "Email": "modestouzeattires@gmail.com",
+    "PartyName": "EXUDESTYLE",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "201",
+    "Email": "krishifabec@gmail.com",
+    "PartyName": "KRISHIFAB",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "202",
+    "Email": "customercareadina@gmail.com",
+    "PartyName": "ADINA CLAIM COMFORT",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "203",
+    "Email": "sunfashionandlifestyle1@gmail.com",
+    "PartyName": "24 CARAT SUIT",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "204",
+    "Email": "HINAIMPEX104@GMAIL.COM",
+    "PartyName": "QMQ",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "205",
+    "Email": "mayur.goti36@gmail.com",
+    "PartyName": "GOROLY",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "206",
+    "Email": "brownculture05@gmail.com",
+    "PartyName": "BROWN CULTURE",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "207",
+    "Email": "forkeycloth19@gmail.com",
+    "PartyName": "FORKEY",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "208",
+    "Email": "Gopinathenterprise1993@gmail.com",
+    "PartyName": "GO RITZY BUYZ",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "209",
+    "Email": "azreenfashion@gmail.com",
+    "PartyName": "AZREEN",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "210",
+    "Email": "galerioenterprise1215@gmail.com",
+    "PartyName": "FILIATE",
+    "CC": "anjali.singh@brandcentral.in,meet.damakia@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "212",
+    "Email": "raj.patel9104014040@gmail.com",
+    "PartyName": "AKSHARAM TRENDS",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "213",
+    "Email": "unityluxure@gmail.com",
+    "PartyName": "MISS IKA",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "214",
+    "Email": "alpeshgoti145@gmail.com",
+    "PartyName": "BAPA SITARAM FABRIC",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "215",
+    "Email": "kesudiii@gmail.com",
+    "PartyName": "KESUDI",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "216",
+    "Email": "amiratclothing007@gmail.com",
+    "PartyName": "AMIRAT",
+    "CC": "anjali.singh@brandcentral.in,dinesh.ahir@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "217",
+    "Email": "Das0175.ad@gmail.com,adaana0175.ad@gmail.com",
+    "PartyName": "BALAKAM",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "218",
+    "Email": "kevalkevadiya1@gmail.com",
+    "PartyName": "EMBLIKA",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "220",
+    "Email": "nilambrijeshkumarchodavadiya@gmail.com",
+    "PartyName": "ANVERI TEXTILES",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "221",
+    "Email": "ecomstorecare@gmail.com",
+    "PartyName": "BELLSTONE",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "222",
+    "Email": "savankhunt83@gmail.com",
+    "PartyName": "PARALIANS",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "223",
+    "Email": "bhumicreation52@gmail.com",
+    "PartyName": "MADHUHANSH",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "225",
+    "Email": "jkenterprise171@gmail.com",
+    "PartyName": "FUNKY RICH",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "226",
+    "Email": "Westlandlifestyle21@Gmail.Com",
+    "PartyName": "FIBER MILL",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "227",
+    "Email": "milkin2021@gmail.com",
+    "PartyName": "MILDIN",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "228",
+    "Email": "gopifashion17@gmail.com",
+    "PartyName": "DREAM CRUSHERS",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "229",
+    "Email": "nan",
+    "PartyName": "IZIBRA",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "230",
+    "Email": "ankitakakadia2022@gmail.com",
+    "PartyName": "JYESHTA",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "231",
+    "Email": "fabcartzinfo@gmail.com",
+    "PartyName": "FABCARTZ",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "232",
+    "Email": "skyfashion007@gmail.com",
+    "PartyName": "SKY FAB",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "233",
+    "Email": "vjfashionamazon@gmail.com",
+    "PartyName": "VJ FASHION",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "235",
+    "Email": "londonbelly2021@gmail.com",
+    "PartyName": "LONDON BELLY",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "236",
+    "Email": "kashikaycreation88@gmail.com",
+    "PartyName": "KASHIKAY CREATION",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "237",
+    "Email": "granthfashion4u@gmail.com",
+    "PartyName": "RENVAANI FASHION",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "238",
+    "Email": "nan",
+    "PartyName": "DHRUVA SALES",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "239",
+    "Email": "bellafashion9638@gmail.com",
+    "PartyName": "QUEEN ELLIE",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "240",
+    "Email": "nan",
+    "PartyName": "RABBY",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "241",
+    "Email": "mavixa.in@gmail.com",
+    "PartyName": "MAVIXA",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "243",
+    "Email": "raploch51@gmail.com",
+    "PartyName": "RAPLOCH",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "244",
+    "Email": "nan",
+    "PartyName": "VIRICA",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "245",
+    "Email": "classyfashion13@gmail.com",
+    "PartyName": "CLASSY FASHION",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "246",
+    "Email": "jashudistyle@gmail.com",
+    "PartyName": "JASHUDI",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "247",
+    "Email": "vikitaenterprise@gmail.com",
+    "PartyName": "VIKITA ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "248",
+    "Email": "keshavsrushti3@gmail.com",
+    "PartyName": "KESHAV SRUSHTI",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "249",
+    "Email": "zaalimafashion@gmail.com",
+    "PartyName": "ZAALIMA FASHION",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "250",
+    "Email": "floralifestyle21@gmail.com",
+    "PartyName": "PAMBERSTONE",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "251",
+    "Email": "nan",
+    "PartyName": "BRUCEWANE",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "252",
+    "Email": "zyanaenterprise@gmail.com",
+    "PartyName": "FLAPFIT",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "253",
+    "Email": "nan",
+    "PartyName": "TIMOERA",
+    "CC": "anjali.singh@brandcentral.in,NEHA.GANDHI@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "254",
+    "Email": "fifth.ucare@gmail.com",
+    "PartyName": "FIFTH U",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "255",
+    "Email": "nipun75@gmail.com",
+    "PartyName": "PRANJAL",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "401",
+    "Email": "AARUENTERPRISE2020@GMAIL.COM",
+    "PartyName": "SKYTONE",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "402",
+    "Email": "Vikalpamazon@gmail.com",
+    "PartyName": "ARIVO",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "403",
+    "Email": "Larisapalace@yahoo.com",
+    "PartyName": "KREVIA",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "405",
+    "Email": "weethreemart@gmail.com",
+    "PartyName": "V3 ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "501",
+    "Email": "navlik2021@gmail.com",
+    "PartyName": "NAIXA",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "502",
+    "Email": "sarahadesigner66@gmail.com",
+    "PartyName": "NIREN ENTERPRISE",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "503",
+    "Email": "tejanialpesh@gmail.com",
+    "PartyName": "MORE & MORE",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "504",
+    "Email": "VENOXCLOTHING@Gmail.Com",
+    "PartyName": "VENOX",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "505",
+    "Email": "Sainandini4782@gmail.com",
+    "PartyName": "ORHANS",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "506",
+    "Email": "manan@mahotsavgroup.com",
+    "PartyName": "MOHVOGUE",
+    "CC": "anjali.singh@brandcentral.in,,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "507",
+    "Email": "houseofmahalasa@gmail.com",
+    "PartyName": "SIRAQ",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "508",
+    "Email": "sales2@leemboodi.com",
+    "PartyName": "SWARON",
+    "CC": "anjali.singh@brandcentral.in,abhijeet.sonwane@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "509",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "VIVATRA",
+    "CC": "anjali.singh@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "602",
+    "Email": "gogoshopper3@gmail.com",
+    "PartyName": "GOGO SHOPPERS",
+    "CC": "santosh.kalsariya@brandcentral.in,siddharth.shukla@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "603",
+    "Email": "thejventerprise@gmail.com",
+    "PartyName": "V3 ENTERPRISE",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "604",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "SELLER CAFE",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "605",
+    "Email": "AARUENTERPRISE2020@GMAIL.COM",
+    "PartyName": "SKYTONE",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "606",
+    "Email": "shoppofobix@gmail.com",
+    "PartyName": "SHOPPOFOBIX",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "607",
+    "Email": "jiyan.enterprise11@gmail.com",
+    "PartyName": "JRM",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "610",
+    "Email": "epsilonecom47@gmail.com",
+    "PartyName": "EPSILON",
+    "CC": "santosh.kalsariya@brandcentral.in,manish.singh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "611",
+    "Email": "Larisapalace@yahoo.com",
+    "PartyName": "KREVIA",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "612",
+    "Email": "mechtailenterprise@gmail.com",
+    "PartyName": "MECHTAIL",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "613",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "EASY CARE",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "614",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "PARKPLUS",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "615",
+    "Email": "hkstore3078@gmail.com",
+    "PartyName": "HK STORE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "616",
+    "Email": "krutiksapariya1997@gmail.com",
+    "PartyName": "KETTLEKANE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "617",
+    "Email": "Jaybshingala40@gmail.com",
+    "PartyName": "EVERSPROUT",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "618",
+    "Email": "ravivaghani2706@gmail.com",
+    "PartyName": "KESI ORNAMENTS",
+    "CC": "santosh.kalsariya@brandcentral.in,siddharth.shukla@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "619",
+    "Email": "mscmanish@gmail.com",
+    "PartyName": "SUPERIOR KITCHENWARE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "621",
+    "Email": "opusretail7@gmail.com",
+    "PartyName": "INOVERA",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "622",
+    "Email": "absales.amazon212@gmail.com",
+    "PartyName": "AB SALES",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "623",
+    "Email": "vivnits@gmail.com",
+    "PartyName": "VIVNITS",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "701",
+    "Email": "MAHARSH.AMAZON@gmail.com",
+    "PartyName": "701-MAHARASH",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "702",
+    "Email": "retailmart.enterprise2018@gmail.com",
+    "PartyName": "RETALIOMART",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "704",
+    "Email": "crownchapter99@gmail.com",
+    "PartyName": "MENEFLIX",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "705",
+    "Email": "crazylifestyle084@gmail.com",
+    "PartyName": "AZZOTE",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "706",
+    "Email": "ketanpatel@dmakgroup.com",
+    "PartyName": "D'MAK",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "707",
+    "Email": "leveret4242@gmail.com",
+    "PartyName": "PALAK",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "708",
+    "Email": "AARUENTERPRISE2020@GMAIL.COM",
+    "PartyName": "SKYTONE",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "709",
+    "Email": "etrade.shoppofobix@gmail.com",
+    "PartyName": "SHOPPOFOBIX",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "710",
+    "Email": "chestaenterprise@gmail.com",
+    "PartyName": "LXOICE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "711",
+    "Email": "eswipe35@gmail.com",
+    "PartyName": "E BASKET",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "712",
+    "Email": "g.b.enterprises2018@gmail.com",
+    "PartyName": "SWABS",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "713",
+    "Email": "713.vivatra@gmail.com",
+    "PartyName": "VIVATRA",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "714",
+    "Email": "bhoomisaliya1@gmail.com",
+    "PartyName": "SEAHELTON",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "715",
+    "Email": "bhoomisaliya1@gmail.com",
+    "PartyName": "YOGIMOONI",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "716",
+    "Email": "anghan.enterprise@gmail.com",
+    "PartyName": "LUXIMAL",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "717",
+    "Email": "Modinitycart@gmail.com",
+    "PartyName": "MODINITY",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "718",
+    "Email": "actus3778@gmail.com",
+    "PartyName": "REVWD",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "719",
+    "Email": "doorstepshopping07@gmail.com",
+    "PartyName": "DOOR STEP SHOPPING",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "721",
+    "Email": "theoperasales@gmail.com",
+    "PartyName": "NYARRA",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "722",
+    "Email": "stopnbuy20@gmail.com",
+    "PartyName": "ZOQWEID",
+    "CC": "santosh.kalsariya@brandcentral.in,siddharth.shukla@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "801",
+    "Email": "darshakbhuva229@gmail.com",
+    "PartyName": "KSP HOME",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "804",
+    "Email": "gogoshopper3@gmail.com",
+    "PartyName": "GOGO SHOPPERS",
+    "CC": "santosh.kalsariya@brandcentral.in,siddharth.shukla@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "805",
+    "Email": "thev3enterprise@gmail.com",
+    "PartyName": "V3 ENTERPRISE",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "807",
+    "Email": "krishivent41@gmail.com",
+    "PartyName": "DCLUB",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "809",
+    "Email": "indiamart.kindle@gmail.com",
+    "PartyName": "NEW WARE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "810",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "HOLLIO",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "811",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "VIVATRA",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "812",
+    "Email": "adlpassion19@gmail.com",
+    "PartyName": "ADL PASSION",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "813",
+    "Email": "AARUENTERPRISE2020@GMAIL.COM",
+    "PartyName": "SKYTONE",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "814",
+    "Email": "shoppofobix@gmail.com",
+    "PartyName": "SHOPPOFOBIX",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "815",
+    "Email": "epsilonecom47@gmail.com",
+    "PartyName": "EPISILON",
+    "CC": "santosh.kalsariya@brandcentral.in,manish.singh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "816",
+    "Email": "amenterprise4950@gmail.com",
+    "PartyName": "OFFERZONE",
+    "CC": "santosh.kalsariya@brandcentral.in,manish.singh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "819",
+    "Email": "bhumisanket1@gmail.com",
+    "PartyName": "YOGIMOONI",
+    "CC": "santosh.kalsariya@brandcentral.in,pinal.rana@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "823",
+    "Email": "Larisapalace@yahoo.com",
+    "PartyName": "KREVIA",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "824",
+    "Email": "rakholiyasam@gmail.com",
+    "PartyName": "OXSAM",
+    "CC": "santosh.kalsariya@brandcentral.in,not working,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "825",
+    "Email": "mechtailenterprise@gmail.com",
+    "PartyName": "MECHTAIL",
+    "CC": "santosh.kalsariya@brandcentral.in,not working,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "826",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "EASYCARE",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "827",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "PARKPLUS",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "828",
+    "Email": "vivatra777@gmail.com",
+    "PartyName": "LIVE2BETTER",
+    "CC": "santosh.kalsariya@brandcentral.in,am7@easysell.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "829",
+    "Email": "hkstore3078@gmail.com",
+    "PartyName": "HK STORE",
+    "CC": "santosh.kalsariya@brandcentral.in,not working,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "830",
+    "Email": "krutiksapariya1997@gmail.com",
+    "PartyName": "KETTLEKANE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "831",
+    "Email": "maulikshah3001@gmail.com",
+    "PartyName": "8BIT ENTERPRISE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "832",
+    "Email": "mscmanish@gmail.com",
+    "PartyName": "SUPERIOR KITCHENWARE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "834",
+    "Email": "jatinsakriya@yahoo.in",
+    "PartyName": "SNE",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "835",
+    "Email": "leveret4242@gmail.com",
+    "PartyName": "PALAK",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "836",
+    "Email": "ngenterprise001@gmail.com",
+    "PartyName": "KPNG",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "837",
+    "Email": "opusretail7@gmail.com",
+    "PartyName": "INOVERA",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "838",
+    "Email": "vivnits@gmail.com",
+    "PartyName": "VIVNITS",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "839",
+    "Email": "targetsurat@yahoo.com",
+    "PartyName": "TARGET HYGIENE",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "840",
+    "Email": "spareque.infor@gmail.com",
+    "PartyName": "SPARQUE",
+    "CC": "santosh.kalsariya@brandcentral.in,akash.nair@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "841",
+    "Email": "Nakshvilla2020@gmail.com",
+    "PartyName": "DEETO STORE",
+    "CC": "santosh.kalsariya@brandcentral.in,not working,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "842",
+    "Email": "vdmart1010@gmail.com",
+    "PartyName": "KITSSENTIAL",
+    "CC": "santosh.kalsariya@brandcentral.in,not working,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "843",
+    "Email": "Gopinath.enterprise121@gmail.com",
+    "PartyName": "AMEEDARSHAN",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "844",
+    "Email": "nencyenterprises010@gmail.com",
+    "PartyName": "AIR-O-MATIC",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "845",
+    "Email": "sales.shivanshtech@gmail.com",
+    "PartyName": "SHIVANSH TECHNOLOGY",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "846",
+    "Email": "buyzone2016@gmail.com",
+    "PartyName": "BUYER ZONE",
+    "CC": "santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "256",
+    "Email": "hingrajenterprise@gmail.com",
+    "PartyName": "BABIRUSA",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "257",
+    "Email": "ZAXIS1997@GMAIL.COM",
+    "PartyName": "MIRAMICHI",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "258",
+    "Email": "prushtifashion@gmail.com",
+    "PartyName": "KAJARU",
+    "CC": "anjali.singh@brandcentral.in,nadim.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "259",
+    "Email": "contact.shrithifashionfab@gmail.com",
+    "PartyName": "SHRITHI FASHION FAB",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "260",
+    "Email": "ganganidarshang1@gmail.com",
+    "PartyName": "ANTIQA",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "261",
+    "Email": "vardhmanmaverick2015@gmail.com",
+    "PartyName": "VIRALGIRL",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "262",
+    "Email": "3butterflies2025@gmail.com",
+    "PartyName": "4FLIES",
+    "CC": "anjali.singh@brandcentral.in,alpesh.mishra@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "263",
+    "Email": "sanganeefashion@gmail.com",
+    "PartyName": "SANGANEE",
+    "CC": "anjali.singh@brandcentral.in,yash.g@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "264",
+    "Email": "kinscollection0576@gmail.com",
+    "PartyName": "FRATONA",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "265",
+    "Email": "akshuscollection64@gmail.com",
+    "PartyName": "TWINLIGHT",
+    "CC": "anjali.singh@brandcentral.in,riya.tandel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "266",
+    "Email": "navyankaa.surat@gmail.com",
+    "PartyName": "NAVYANKAA",
+    "CC": "anjali.singh@brandcentral.in,jyoti.gupta@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "267",
+    "Email": "silkzone99@gmail.com",
+    "PartyName": "SAI SILK",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "268",
+    "Email": "Expertecommerceservices@gmail.com",
+    "PartyName": "MARGI DESIGNER",
+    "CC": "anjali.singh@brandcentral.in,divya.panchal@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "269",
+    "Email": "mahaveerenterprise69@gmail.com",
+    "PartyName": "DISINVENT",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "270",
+    "Email": "anarkali.fashionss@gmail.com",
+    "PartyName": "SAAHMRIGA",
+    "CC": "anjali.singh@brandcentral.in,nitesh.lakhara@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "271",
+    "Email": "mylifashion3@gmail.com",
+    "PartyName": "MYLI FASHION",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "272",
+    "Email": "multiwaofficial@gmail.com",
+    "PartyName": "MULTIWA",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "273",
+    "Email": "nan",
+    "PartyName": "SHEWIN",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "274",
+    "Email": "minusdevangi@gmail.com",
+    "PartyName": "MINIUS",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "275",
+    "Email": "uniquemoments37@gmail.com",
+    "PartyName": "UNIQUE MOMENTS",
+    "CC": "anjali.singh@brandcentral.in,akash.maurya@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "276",
+    "Email": "care.dakshkanya@gmail.com",
+    "PartyName": "DAKSHKANYA",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "278",
+    "Email": "nuclothscompany@gmail.com",
+    "PartyName": "NU CLOTHES",
+    "CC": "anjali.singh@brandcentral.in,mushir.patel@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "279",
+    "Email": "fashionalmaari@gmail.com",
+    "PartyName": "ALMAARI FASHION",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "280",
+    "Email": "ops.spf7284@gmail.com",
+    "PartyName": "VOROXY",
+    "CC": "anjali.singh@brandcentral.in,taha.shaikh@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "626",
+    "Email": "AARUENTERPRISE2020@GMAIL.COM",
+    "PartyName": "SKYTONE",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "731",
+    "Email": "hiten.savaliya1997@gmail.com,ecommerce.auromin@gmail.com",
+    "PartyName": "731-AUROMIN",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "723",
+    "Email": "vasoyakartik@gmail.com",
+    "PartyName": "723-ARABS",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "729",
+    "Email": "kimora02612@gmail.com",
+    "PartyName": "729-BHUMLO",
+    "CC": "santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode": "850",
+    "Email": "stopnbuy20@gmail.com",
+    "PartyName": "850-ZOQWEID",
+    "CC": "santosh.kalsariya@brandcentral.in,siddharth.shukla@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode":"848",
+    "Email":"harrychaklashiya@gmail.com",
+    "PartyName":"848-Harry Empire",
+    "CC":"santosh.kalsariya@brandcentral.in,sapna.jethawa@brandcentral.in,sandip@brandcentral.in"
+  },
+  {
+    "PartyCode":"730",
+    "Email":"elisburryamd@gmail.com",
+    "PartyName":"730-Elisburry",
+    "CC":"santosh.kalsariya@brandcentral.in,afzal.khan@brandcentral.in,sandip@brandcentral.in"
   }
 ]
