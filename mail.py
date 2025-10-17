@@ -1,5 +1,5 @@
-import streamlit as st
 import pandas as pd
+import streamlit as st
 import os
 import json
 import smtplib
@@ -8,21 +8,49 @@ from email.mime.text import MIMEText
 from pathlib import Path
 import xlsxwriter
 import hashlib
-
+import zipfile
+import pyodbc
 import webbrowser
 from io import BytesIO
 from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from datetime import datetime
+7
 
 # Constants
 JSON_PATH = Path("party_emails.json")
 EXCEL_PATH = Path("Invoices.xlsx")
-EMAIL_UPLOAD_PASSWORD = "PaymentMailSenderDashboard"
+EMAIL_UPLOAD_PASSWORD = "Payment Mail Sender Dashboard"
 
+connection_string = (
+    "DRIVER={ODBC Driver 17 for SQL Server};"
+    "SERVER=(localdb)\\MSSQLLocalDB;"
+    "DATABASE=EasySell;"
+    "Trusted_Connection=yes;"
+)
 
+# def get_db_connection():
+#     return pyodbc.connect(connection_string)
 
+# def already_sent(party_code, invoice_no):
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+#     query = "SELECT 1 FROM dbo.EmailLogs WHERE PartyCode = ? AND InvoiceNo = ?"
+#     cursor.execute(query, (party_code.strip(), invoice_no.strip()))
+#     result = cursor.fetchone()
+#     cursor.close()
+#     conn.close()
+#     return result is not None
 
+# def record_sent_email(party_code, party_name, invoice_no):
+#     conn = get_db_connection()
+#     cursor = conn.cursor()
+#     query = "INSERT INTO dbo.EmailLogs (PartyCode, PartyName, InvoiceNo, Timestamp) VALUES (?, ?, ?, ?)"
+#     cursor.execute(query, (party_code.strip(), party_name.strip(), invoice_no.strip(), datetime.now()))
+#     conn.commit()
+#     cursor.close()
+#     conn.close()
+    
 # Sample Excel creation function (for download button)
 def create_sample_excel():
     sample_payment = pd.DataFrame({
@@ -67,7 +95,7 @@ def create_sample_mail_excel():
 EMAIL_TEMPLATE = """
 <html>
   <body style="font-family: Arial, sans-serif; color: #333;">
-    <h2 style="color: #2c3e50;">Payment Reconciliation Summary</h2>
+    
     <p>Dear [Party Name],</p>
     <p>Please find below the summary of your recent transactions with us:</p>
 
@@ -90,6 +118,8 @@ EMAIL_TEMPLATE = """
     </table>
 
     <!-- Debit Note section will only appear if replaced -->
+    
+   
   </body>
 </html>
 """
@@ -118,7 +148,7 @@ def hash_password(password):
 
 def check_password(input_pwd):
     # Here default password is 'password'
-    return hash_password(input_pwd) == hash_password("password")
+    return hash_password(input_pwd) == hash_password("Password")
 
 # Helper: Load Excel Data
 def load_excel(file_path):
@@ -133,7 +163,14 @@ def load_excel(file_path):
 # Match data function with debit note logic
 # Match data function with debit note logic
 def match_data(payment_df, debit_df, party_emails):
-    email_map = {e["PartyCode"].strip(): [email.strip() for email in e["Email"].split(",")] for e in party_emails}
+    # Updated map to include both emails and CCs
+    email_map = {
+        e["PartyCode"].strip(): {
+            "to": [email.strip() for email in e["Email"].split(",")],
+            "cc": [cc.strip() for cc in e["CC"].split(",")] if "CC" in e and pd.notna(e["CC"]) else []
+        }
+        for e in party_emails
+    }
 
     payment_df.columns = payment_df.columns.str.strip()
     debit_df.columns = debit_df.columns.str.strip()
@@ -142,7 +179,7 @@ def match_data(payment_df, debit_df, party_emails):
     mismatch_log_lines = []
     skip_log_lines = []
 
-    for party_code, emails in email_map.items():
+    for party_code, email_data in email_map.items():
         party_payments = payment_df[payment_df['Party Code'].astype(str).str.strip() == party_code.strip()]
         if party_payments.empty:
             skip_log_lines.append(f"SKIPPED: {party_code} — No payment rows found in Payment Sheet")
@@ -151,11 +188,10 @@ def match_data(payment_df, debit_df, party_emails):
         related_debits = debit_df[debit_df['Party Code'].astype(str).str.strip() == party_code.strip()] if 'Party Code' in debit_df.columns else pd.DataFrame()
         total_debit_amount = related_debits['Amount'].sum() if not related_debits.empty else 0
 
-        # Match debit amount with total
         party_payments['Debit Amount'] = party_payments['Debit Amount'].fillna(0)
         party_debit_sum = party_payments['Debit Amount'].sum()
 
-        if abs(party_debit_sum - total_debit_amount) > 0.01:  # check if mismatch
+        if abs(party_debit_sum - total_debit_amount) > 0.01:
             skip_log_lines.append(f"SKIPPED: {party_code} — Debit Amount mismatch between payment sheet and debit sheet")
             continue
 
@@ -165,7 +201,6 @@ def match_data(payment_df, debit_df, party_emails):
             debit_note = row.get('Debit Note') if 'Debit Note' in row else None
 
             if debit_note is None or (pd.isna(debit_note) or debit_note == ''):
-                # No debit note means include payment row as usual
                 payment_issues.append(row.to_dict())
             else:
                 matched_debit_rows = related_debits[related_debits['Return Invoice No.'] == debit_note] if 'Return Invoice No.' in related_debits.columns else pd.DataFrame()
@@ -183,12 +218,14 @@ def match_data(payment_df, debit_df, party_emails):
         if payment_issues:
             result.append({
                 'party_code': party_code,
-                'emails': emails,
+                'emails': email_data["to"],
+                'cc_emails': email_data["cc"],
                 'payments': payment_issues,
                 'debits': related_debits.to_dict(orient='records') if not related_debits.empty else []
             })
         else:
             skip_log_lines.append(f"SKIPPED: {party_code} — All payment rows matched with debit notes correctly.")
+
 
     # Write logs
     if skip_log_lines:
@@ -216,7 +253,7 @@ def generate_email_body(party_code, payment_rows, debit_rows):
     total_inv_amount = 0
     total_net_amount = 0
     total_bank_payment = 0
-
+            
     for row in payment_rows:
         # Format Payment Date (remove timestamp)
         payment_date = row.get('Payment Date', '')
@@ -309,14 +346,17 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         html_body = html_body.replace("</body>", debit_html + "</body>")
 
     # Closing message
-    html_body = html_body.replace(
-        '<p>Let us know if you have any questions regarding this reconciliation.</p>',
-    '''
-    <p><strong>Important:</strong> If you have any concerns or questions regarding this summary, please raise them within 7 days of receiving this email. After this period, no further action will be taken.</p>
-    <br>
-    <p>Best Regards,<br>Your Accounts Team</p>
-    '''
-   )
+   # Closing message with final note
+    closing_note = """
+    <br><br>
+    <p><strong>🔔 Important Note:</strong> If you have any discrepancies or concerns regarding the above payment summary, please raise the issue within 7 days. No changes or claims will be entertained after this period.</p>
+
+    <p>Thank you for your continued partnership.</p>
+
+    <p>Best regards,<br><strong>Easy Sell Service Pvt. Ltd.</strong></p>
+        """
+
+    html_body = html_body.replace("</body>", f"{closing_note}</body>")
 
    
 
@@ -328,15 +368,20 @@ def generate_email_body(party_code, payment_rows, debit_rows):
 
 
 # Send email via Gmail SMTP
-def send_email(gmail_user, app_password, to_emails, subject, html_body):
+def send_email(gmail_user, app_password, to_emails, subject, html_body, cc=None):
     msg = MIMEMultipart('alternative')
     msg['From'] = gmail_user
     msg['To'] = ", ".join(to_emails)
+    if cc:
+        msg['Cc'] = ", ".join(cc)
     msg['Subject'] = subject
     msg.attach(MIMEText(html_body, 'html'))
+    
+    recipients = to_emails + (cc if cc else [])
+    
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as server:
         server.login(gmail_user, app_password)
-        server.sendmail(gmail_user, to_emails, msg.as_string())
+        server.sendmail(gmail_user, recipients, msg.as_string())
 
 # --------------- STREAMLIT UI ---------------
 # --------------- STREAMLIT UI ---------------
@@ -389,11 +434,12 @@ with st.expander("🔑 Protected Upload", expanded=False):
                         party = str(row["Party Name"]).strip()
                         code = str(row['Party Code']).strip()
                         emails = str(row['Email']).strip()
-                        updated_json.append({"PartyCode": code, "Email": emails, "PartyName": party})
+                        cc=str(row['CC']).strip()
+                        updated_json.append({"PartyCode": code, "Email": emails, "PartyName": party, "CC":cc})
                     save_party_emails(updated_json)
                     st.success("✅ Party email list updated from Excel!")
                 else:
-                    st.error("Excel must contain'Party Code' 'Party Name' and 'Email' columns.")
+                    st.error("Excel must contain'Party Code' 'Party Name' 'CC' and 'Email' columns.")
             except Exception as e:
                 st.error(f"Error reading Excel: {e}")
     elif upload_pass:
@@ -460,50 +506,101 @@ if uploaded_file:
 
 
 
-        if st.button("Send Emails"):
-            log_lines = []  # 🔹 Start collecting log lines
-            sent_count = 0
-            failed_count = 0
+            if st.button("Send Emails"):
+                log_lines = []
+                sent_count = 0
+                failed_count = 0
+                skips = []
 
-            log_lines.append("=== Emails Sent Successfully ===")
+                log_lines.append("=== Emails Sent Successfully ===")
 
-            for entry in matched_results:
-                html_body = generate_email_body(entry['party_code'], entry['payments'], entry['debits'])
-                try:
-                    party_name = next(
-                        (e['PartyName'] for e in party_emails if e['PartyCode'] == entry['party_code']),
-                        'Unknown Party'
-                    )
-                    send_email(
-                    gmail_user,
-                    gmail_pwd,
-                    entry['emails'],
-                    f"Payment Reconciliation for {entry['party_code']} - {party_name}",
-                    html_body
-                    )    
-                    st.success(f"Email sent to {party_name} ({entry['party_code']})")
-                    log_lines.append(f"Party Code: {entry['party_code']} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])}")
-                    sent_count += 1
-                except Exception as e:
-                    st.error(f"Failed for {entry['party_code']}: {e}")
-                    log_lines.append(f"FAILED: {entry['party_code']} | Error: {e}")
-                    failed_count += 1
+                for entry in matched_results:
+                    party_code = entry['party_code']
+                    party_name = next((e['PartyName'] for e in party_emails if e['PartyCode'] == party_code), 'Unknown Party')
+                    cc_str = next((e.get('CC', '') for e in party_emails if e['PartyCode'] == party_code), '')
+                    cc_emails = [email.strip() for email in cc_str.split(',')] if cc_str else []
 
-            # Add skipped parties
-            log_lines.append("\n=== Skipped Parties ===")
-            if skips:
-                for line in skips:
-                    log_lines.append(line)
-            else:
-                log_lines.append("None")
+                    invoice_list = list({item['InvoiceNo'] for item in entry['payments'] + entry['debits'] if 'InvoiceNo' in item})
 
-            # Write log to file
-            with open("FinalEmailLog.txt", "w", encoding="utf-8") as log_file:
-                for line in log_lines:
-                    log_file.write(line + "\n")
+                    # Skip only if all invoices already sent
+                    # if all(already_sent(party_code, inv) for inv in invoice_list):
+                    #     st.info(f"⏩ Already sent to {party_code} ({party_name}) — skipping.")
+                    #     skips.append(f"SKIPPED: {party_code} | Party Name: {party_name} | Reason: All invoices already sent")
+                    #     continue
 
-            # Final result summary
-            st.success(f"✅ Emails sent: {sent_count}, Failed: {failed_count}, Skipped: {len(skips)}")
+                    html_body = generate_email_body(party_code, entry['payments'], entry['debits'])
+
+                    try:
+                        send_email(
+                            gmail_user,
+                            gmail_pwd,
+                            entry['emails'],
+                            f"Payment Reconciliation for {party_code} - {party_name}",
+                            html_body,
+                            cc=cc_emails
+                        )
+                        st.success(f"✅ Email sent to {party_name} ({party_code})")
+                        log_lines.append(f"Party Code: {party_code} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])} | CC: {', '.join(cc_emails)}")
+                        sent_count += 1
+
+                        # for invoice_no in invoice_list:
+                        #     # if not already_sent(party_code, invoice_no):
+                        #     #record_sent_email(party_code, party_name, invoice_no)
+
+                    except Exception as e:
+                        st.error(f"❌ Failed for {party_code}: {e}")
+                        log_lines.append(f"FAILED: {party_code} | Error: {e}")
+                        failed_count += 1
+
+                log_lines.append("\n=== Skipped Parties ===")
+                if skips:
+                    for line in skips:
+                        log_lines.append(line)
+                else:
+                    log_lines.append("None")
+
+                with open("FinalEmailLog.txt", "w", encoding="utf-8") as log_file:
+                    for line in log_lines:
+                        log_file.write(line + "\n")
+
+                st.success(f"✅ Emails sent: {sent_count}, Failed: {failed_count}, Skipped: {len(skips)}")
+
+                    
+            # ----------------- Party-wise Excel Download -----------------
+            st.subheader("📂 Download All Party-wise Sheets in One Excel File")
+
+            if 'matched_results' in locals() and matched_results:
+                # Create an Excel file in memory
+                partywise_output = BytesIO()
+                with pd.ExcelWriter(partywise_output, engine='xlsxwriter') as writer:
+                    for party in matched_results:
+                        party_code = party['party_code']
+                        df = pd.DataFrame(party['payments'])
+
+                        # Optional: add debits to another sheet
+                        df_debit = pd.DataFrame(party['debits'])
+
+                        # Ensure sheet names are Excel-safe
+                        sheet_name_payment = f"{party_code[:28]}_Pay"
+                        sheet_name_debit = f"{party_code[:28]}_Debit"
+
+                        df.to_excel(writer, index=False, sheet_name=sheet_name_payment)
+                        if not df_debit.empty:
+                            df_debit.to_excel(writer, index=False, sheet_name=sheet_name_debit)
+                
+             
+
+                partywise_output.seek(0)
+                timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+                filename = f"All_Partywise_Payments_{timestamp}.xlsx"
+
+                st.download_button(
+                    label="📥 Download All Party-wise Payments (Excel)",
+                    data=partywise_output,
+                    file_name=filename,
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+                
 
             # Download log
             with open("FinalEmailLog.txt", "rb") as log_file:
@@ -514,6 +611,8 @@ if uploaded_file:
                     mime="text/plain"
                 )
 st.subheader("📊 Convert Final Email Log to Excel")
+
+
 
 if os.path.exists("FinalEmailLog.txt"):
     with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
@@ -568,3 +667,25 @@ if os.path.exists("FinalEmailLog.txt"):
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
     
+def create_partywise_zip(send_data):
+    zip_buffer = BytesIO()
+
+    with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+        for party in send_data:
+            party_code = str(party['party_code']).strip()
+            df = pd.DataFrame(party['payments'])
+
+            # Create Excel file in memory
+            excel_buffer = BytesIO()
+            with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name="Payments")
+                writer.save()
+            excel_buffer.seek(0)
+
+            # Write this file to ZIP
+            zip_file.writestr(f"{party_code}.xlsx", excel_buffer.read())
+
+    zip_buffer.seek(0)
+    return zip_buffer
+
+
