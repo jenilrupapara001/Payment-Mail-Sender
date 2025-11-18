@@ -16,6 +16,7 @@ from openpyxl import Workbook
 from openpyxl.styles import PatternFill, Font
 from datetime import datetime
 import time  # For SMTP throttling!
+import random
 
 # Constants
 JSON_PATH = Path("party_emails.json")
@@ -423,7 +424,7 @@ if uploaded_file:
                     st.error(f"❌ Failed for {party_code}: {e}")
                     log_lines.append(f"FAILED: {party_code} | Error: {e}")
                     failed_count += 1
-                time.sleep(1)  # <--- Delay to avoid SMTP connection closed!
+                time.sleep(random.uniform(1, 5))  # Random delay to avoid SMTP connection refused errors
             log_lines.append("\n=== Skipped Parties ===")
             if skips:
                 for line in skips:
