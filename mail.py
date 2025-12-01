@@ -134,6 +134,24 @@ def match_data(payment_df, debit_df, party_emails):
     result = []
     mismatch_log_lines = []
     skip_log_lines = []
+    parties_without_email = []
+    
+    # First, identify parties in payment sheet that have no email
+    payment_party_codes = set(payment_df['Party Code'].astype(str).str.strip()) if 'Party Code' in payment_df.columns else set()
+    for party_code in payment_party_codes:
+        if party_code not in email_map or not email_map[party_code]["to"] or all(email.strip().lower() in ['nan', 'none', ''] for email in email_map[party_code]["to"]):
+            party_name = party_code  # Default to party code if name not found
+            # Try to find party name from party_emails
+            for party in party_emails:
+                if party["PartyCode"].strip() == party_code.strip():
+                    party_name = party["PartyName"]
+                    break
+            parties_without_email.append({
+                "party_code": party_code,
+                "party_name": party_name,
+                "payment_count": len(payment_df[payment_df['Party Code'].astype(str).str.strip() == party_code.strip()])
+            })
+    
     for party_code, email_data in email_map.items():
         party_payments = payment_df[payment_df['Party Code'].astype(str).str.strip() == party_code.strip()]
         if party_payments.empty:
@@ -184,7 +202,7 @@ def match_data(payment_df, debit_df, party_emails):
         with open('MismatchLog.txt', 'w') as f:
             for line in mismatch_log_lines:
                 f.write(line + "\n")
-    return result, skip_log_lines
+    return result, skip_log_lines, parties_without_email
 
 def generate_email_body(party_code, payment_rows, debit_rows):
     party_name = next((e['PartyName'] for e in party_emails if e['PartyCode'] == party_code), 'Unknown Party')
@@ -202,20 +220,51 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         bank_payment = row.get('Bank Payment', '')
         if isinstance(bank_payment, pd.Timestamp) or (' ' in str(bank_payment)):
             bank_payment = str(bank_payment).split(' ')[0]
-        debit_note_val = row.get('Debit Amount', 'N/A')
+        # Handle NaN and missing values
+        inv_no = row.get('Inv. No.', '')
+        pur_date = row.get('Pur. Date', '')
+        total_inv_amount = row.get('Total Inv. Amount', '')
+        debit_note_val = row.get('Debit Amount', '')
+        net_amount = row.get('Net Amount', '')
+        
+        # Replace NaN and empty values with '-'
+        inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
+        pur_date = '-' if pd.isna(pur_date) or pur_date == '' else str(pur_date)
+        total_inv_amount = '-' if pd.isna(total_inv_amount) or total_inv_amount == '' else str(total_inv_amount)
+        debit_note_val = '-' if pd.isna(debit_note_val) or debit_note_val == '' else str(debit_note_val)
+        net_amount = '-' if pd.isna(net_amount) or net_amount == '' else str(net_amount)
+        bank_payment = '-' if pd.isna(bank_payment) or bank_payment == '' else str(bank_payment)
+        
         payment_html += f"""
         <tr style="text-align:center; border:1px solid #ccc;">
-          <td style="border:1px solid #ccc;">{row.get('Inv. No.', '')}</td>
-          <td style="border:1px solid #ccc;">{row.get('Pur. Date', '')}</td>
-          <td style="border:1px solid #ccc;">{row.get('Total Inv. Amount', '')}</td>
+          <td style="border:1px solid #ccc;">{inv_no}</td>
+          <td style="border:1px solid #ccc;">{pur_date}</td>
+          <td style="border:1px solid #ccc;">{total_inv_amount}</td>
           <td style="border:1px solid #ccc;">{debit_note_val}</td>
-          <td style="border:1px solid #ccc;">{row.get('Net Amount', '')}</td>
+          <td style="border:1px solid #ccc;">{net_amount}</td>
           <td style="border:1px solid #ccc;">{bank_payment}</td>
           <td style="border:1px solid #ccc;">{payment_date_str}</td>
         </tr>"""
-        total_inv_amount += float(row.get('Total Inv. Amount', 0) or 0)
-        total_net_amount += float(row.get('Net Amount', 0) or 0)
-        total_bank_payment += float(row.get('Bank Payment', 0) or 0)
+        # Handle NaN values for calculations
+        total_inv_val = row.get('Total Inv. Amount', 0)
+        net_amount_val = row.get('Net Amount', 0)
+        bank_payment_val = row.get('Bank Payment', 0)
+        
+        # Convert to float, replacing NaN with 0
+        try:
+            total_inv_amount += float(total_inv_val) if not pd.isna(total_inv_val) and total_inv_val != '' else 0
+        except (ValueError, TypeError):
+            total_inv_amount += 0
+            
+        try:
+            total_net_amount += float(net_amount_val) if not pd.isna(net_amount_val) and net_amount_val != '' else 0
+        except (ValueError, TypeError):
+            total_net_amount += 0
+            
+        try:
+            total_bank_payment += float(bank_payment_val) if not pd.isna(bank_payment_val) and bank_payment_val != '' else 0
+        except (ValueError, TypeError):
+            total_bank_payment += 0
     payment_html += f"""
     <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
       <td colspan="2" style="border:1px solid #ccc;">Total</td>
@@ -243,16 +292,28 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         total_debit_amount = 0
         for row in debit_rows:
             date_str = row.get('Date', '')
+            return_inv_no = row.get('Return Invoice No.', '')
+            amount_val = row.get('Amount', 0)
+            
+            # Handle NaN and empty values
+            date_str = '-' if pd.isna(date_str) or date_str == '' else str(date_str)
+            return_inv_no = '-' if pd.isna(return_inv_no) or return_inv_no == '' else str(return_inv_no)
+            
             try:
-                date_str = pd.to_datetime(date_str).strftime("%Y-%m-%d")
+                date_str = pd.to_datetime(date_str).strftime("%Y-%m-%d") if date_str != '-' else '-'
             except Exception:
                 pass
-            amount = float(row.get('Amount', 0) or 0)
-            total_debit_amount += amount
+            
+            try:
+                amount = float(amount_val) if not pd.isna(amount_val) and amount_val != '' else 0
+                total_debit_amount += amount
+            except (ValueError, TypeError):
+                amount = 0
+            
             debit_html += f"""
             <tr style="border: 1px solid #ccc; text-align: center;">
               <td style="border:1px solid #ccc;">{date_str}</td>
-              <td style="border:1px solid #ccc;">{row.get('Return Invoice No.', '')}</td>
+              <td style="border:1px solid #ccc;">{return_inv_no}</td>
               <td style="border:1px solid #ccc;">{amount:.2f}</td>
             </tr>"""
         debit_html += f"""
@@ -384,7 +445,16 @@ if uploaded_file:
     gmail_pwd = st.text_input("App Password (Use Gmail App Password)", type="password")
 
     if gmail_user and gmail_pwd:
-        matched_results, skips = match_data(payment_df, debit_df, party_emails)
+        matched_results, skips, parties_without_email = match_data(payment_df, debit_df, party_emails)
+        
+        # Display parties without email alerts
+        if parties_without_email:
+            st.subheader("⚠️ Parties Without Email Addresses")
+            for party in parties_without_email:
+                with st.container():
+                    st.error(f"**Party Code:** {party['party_code']} | **Party Name:** {party['party_name']} | **Payment Records:** {party['payment_count']}")
+                st.markdown("---")
+        
         st.subheader("✅ Ready to Email")
         for entry in matched_results:
             with st.expander(entry['party_code']):
