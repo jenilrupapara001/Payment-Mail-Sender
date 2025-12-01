@@ -466,22 +466,177 @@ if uploaded_file:
     if gmail_user and gmail_pwd:
         matched_results, skips, parties_without_email = match_data(payment_df, debit_df, party_emails)
         
-        # Display parties without email alerts
+        # Display parties without email addresses in card format
         if parties_without_email:
             st.subheader("⚠️ Parties Without Email Addresses")
-            for party in parties_without_email:
-                with st.container():
-                    st.error(f"**Party Code:** {party['party_code']} | **Party Name:** {party['party_name']} | **Payment Records:** {party['payment_count']}")
-                st.markdown("---")
+            
+            # Summary metrics
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Parties", len(parties_without_email))
+            with col2:
+                total_payment_records = sum(party['payment_count'] for party in parties_without_email)
+                st.metric("Total Payment Records", total_payment_records)
+            with col3:
+                avg_records = total_payment_records / len(parties_without_email) if parties_without_email else 0
+                st.metric("Avg Records per Party", f"{avg_records:.1f}")
+            
+            st.markdown("---")
+            
+            # Show parties without email in card format
+            st.subheader("📋 Parties Requiring Email Setup")
+            
+            # Create columns for better layout
+            cols_per_row = 2
+            email_columns = st.columns(cols_per_row)
+            
+            for i, party in enumerate(parties_without_email):
+                col_idx = i % cols_per_row
+                
+                with email_columns[col_idx]:
+                    # Create a card-like container
+                    with st.container():
+                        st.markdown(f"""
+                        <div style="
+                            background-color: #fff3cd; 
+                            border: 1px solid #ffeaa7; 
+                            border-radius: 8px; 
+                            padding: 15px; 
+                            margin: 5px 0;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        ">
+                            <h4 style="color: #856404; margin: 0 0 8px 0;">🏢 {party['party_name']}</h4>
+                            <p style="margin: 2px 0; color: #6c757d;"><strong>Code:</strong> {party['party_code']}</p>
+                            <p style="margin: 2px 0; color: #6c757d;"><strong>Payment Records:</strong> {party['payment_count']}</p>
+                            <div style="
+                                background-color: #f8d7da; 
+                                color: #721c24; 
+                                padding: 5px 10px; 
+                                border-radius: 4px; 
+                                font-size: 0.85em; 
+                                margin-top: 8px;
+                                text-align: center;
+                            ">
+                                ⚠️ Email Required
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Add new row after every cols_per_row items
+                if (i + 1) % cols_per_row == 0 and i < len(parties_without_email) - 1:
+                    st.markdown("---")
+            
+            # Add download option for parties without email
+            email_missing_df = pd.DataFrame(parties_without_email)
+            csv_no_email = email_missing_df.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Parties Without Email (CSV)",
+                data=csv_no_email,
+                file_name="parties_without_email.csv",
+                mime="text/csv"
+            )
+            
+            st.markdown("---")
+            
+            # Add action section
+            st.subheader("🔧 Next Steps")
+            st.info("""
+            **To enable email sending for these parties:**
+            1. Update the party email list via the protected upload section above
+            2. Ensure each party has a valid email address
+            3. Re-upload the payment Excel file to reprocess
+            """)
         
         st.subheader("✅ Ready to Email")
         for entry in matched_results:
             with st.expander(entry['party_code']):
                 st.json(entry)
+        # Display skipped parties in card format
         if skips:
-            st.warning(f"Skipped Parties: {len(skips)}")
+            st.subheader("⏭️ Skipped Parties Summary")
+            
+            # Count skip reasons
+            skip_reasons = {}
             for line in skips:
-                st.text(line)
+                reason = line.split(" — ")[1] if " — " in line else "Unknown reason"
+                skip_reasons[reason] = skip_reasons.get(reason, 0) + 1
+            
+            # Show summary
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Skipped", len(skips))
+            with col2:
+                st.metric("Unique Reasons", len(skip_reasons))
+            with col3:
+                processed = len(matched_results)
+                st.metric("Processed", processed)
+            
+            st.markdown("---")
+            
+            # Show skip reasons breakdown
+            if len(skip_reasons) > 1:
+                st.subheader("📊 Skip Reasons Breakdown")
+                for reason, count in skip_reasons.items():
+                    st.info(f"**{count} parties**: {reason}")
+                st.markdown("---")
+            
+            # Show detailed skip list in card format
+            st.subheader("📋 Detailed Skip List")
+            
+            # Create columns for better layout
+            cols_per_row = 2
+            skip_columns = st.columns(cols_per_row)
+            
+            for i, line in enumerate(skips):
+                col_idx = i % cols_per_row
+                
+                with skip_columns[col_idx]:
+                    # Parse the skip line to extract party code and reason
+                    if " — " in line:
+                        party_info, reason = line.split(" — ", 1)
+                        party_code = party_info.replace("SKIPPED: ", "").strip()
+                        
+                        # Create a card-like container
+                        with st.container():
+                            st.markdown(f"""
+                            <div style="
+                                background-color: #f8f9fa; 
+                                border: 1px solid #dee2e6; 
+                                border-radius: 8px; 
+                                padding: 15px; 
+                                margin: 5px 0;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                            ">
+                                <h4 style="color: #dc3545; margin: 0 0 8px 0;">❌ {party_code}</h4>
+                                <p style="margin: 0; color: #6c757d; font-size: 0.9em;">{reason}</p>
+                            </div>
+                            """, unsafe_allow_html=True)
+                    else:
+                        # Fallback for lines without proper format
+                        with st.container():
+                            st.error(f"📋 {line}")
+                
+                # Add new row after every cols_per_row items
+                if (i + 1) % cols_per_row == 0 and i < len(skips) - 1:
+                    st.markdown("---")
+            
+            # Add download option for skip list
+            skip_data = []
+            for line in skips:
+                if " — " in line:
+                    party_info, reason = line.split(" — ", 1)
+                    party_code = party_info.replace("SKIPPED: ", "").strip()
+                    skip_data.append({"Party Code": party_code, "Skip Reason": reason})
+            
+            if skip_data:
+                skip_df = pd.DataFrame(skip_data)
+                csv = skip_df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Skip List (CSV)",
+                    data=csv,
+                    file_name="skipped_parties.csv",
+                    mime="text/csv"
+                )
 
         # ------------- SMTP FIXED EMAIL LOOP ------------
         if st.button("Send Emails"):
