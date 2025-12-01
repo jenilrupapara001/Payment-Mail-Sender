@@ -366,515 +366,389 @@ def send_email(gmail_user, app_password, to_emails, subject, html_body, cc=None)
         server.login(gmail_user, app_password)
         server.sendmail(gmail_user, recipients, msg.as_string())
 
-st.set_page_config(
-    page_title="EasySell - Payment Reconciliation Portal", 
-    page_icon="🏢", 
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
-# Custom CSS for professional styling
-st.markdown("""
-<style>
-    .main-header {
-        background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 100%);
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        color: white;
-        text-align: center;
-    }
-    .business-card {
-        background-color: #f8fafc;
-        border: 2px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 20px;
-        margin: 10px 0;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .metric-container {
-        background-color: white;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        padding: 15px;
-        text-align: center;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-    .success-box {
-        background-color: #ecfdf5;
-        border: 1px solid #10b981;
-        border-radius: 8px;
-        padding: 15px;
-        color: #065f46;
-    }
-    .warning-box {
-        background-color: #fef3c7;
-        border: 1px solid #f59e0b;
-        border-radius: 8px;
-        padding: 15px;
-        color: #92400e;
-    }
-    .error-box {
-        background-color: #fef2f2;
-        border: 1px solid #ef4444;
-        border-radius: 8px;
-        padding: 15px;
-        color: #991b1b;
-    }
-    .footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: #1f2937;
-        color: white;
-        padding: 10px;
-        text-align: center;
-        font-size: 0.8em;
-    }
-</style>
-""", unsafe_allow_html=True)
+st.set_page_config(page_title="Payment Reconciliation", layout="wide")
 
 if "auth" not in st.session_state:
     st.session_state.auth = False
 
 if not st.session_state.auth:
-    # Professional login screen
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
-        st.markdown("""
-        <div class="main-header">
-            <h1>🏢 EasySell Financial Portal</h1>
-            <h3>Payment Reconciliation & Communication System</h3>
-            <p>Secure Access for Authorized Personnel Only</p>
-        </div>
-        """, unsafe_allow_html=True)
-        
-        pwd = st.text_input("🔐 Administrator Password", type="password", placeholder="Enter secure access password")
-        col1, col2, col3 = st.columns([1, 2, 1])
-        with col2:
-            if st.button("🔓 Secure Login", use_container_width=True):
-                if check_password(pwd):
-                    st.session_state.auth = True
-                    st.rerun()
-                else:
-                    st.error("❌ Access Denied: Invalid credentials")
-        
-        st.markdown("""
-        <div style="text-align: center; margin-top: 30px; color: #6b7280;">
-            <p>© 2024 EasySell Service Pvt. Ltd. | All Rights Reserved</p>
-            <p>For technical support, contact IT Department</p>
-        </div>
-        """, unsafe_allow_html=True)
+    pwd = st.text_input("Enter Admin Password", type="password")
+    if st.button("Login"):
+        if check_password(pwd):
+            st.session_state.auth = True
+        else:
+            st.error("Invalid password")
     st.stop()
 
-# Main dashboard header
-st.markdown("""
-<div class="main-header">
-    <h1>🏢 EasySell Financial Portal</h1>
-    <h3>Payment Reconciliation & Vendor Communication System</h3>
-    <p>Streamlined Financial Operations Management</p>
-</div>
-""", unsafe_allow_html=True)
-# Sidebar navigation
-with st.sidebar:
-    st.markdown("""
-    <div style="text-align: center; padding: 20px; background-color: #1e3a8a; color: white; border-radius: 10px; margin-bottom: 20px;">
-        <h3>🏢 EasySell Portal</h3>
-        <p>Financial Operations</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("### 📋 Navigation Menu")
-    selected_section = st.selectbox("Select Operation", [
-        "📊 Dashboard Overview",
-        "📁 Data Management", 
-        "📧 Communication Center",
-        "📈 Reports & Analytics",
-        "⚙️ System Settings"
-    ])
-    
-    st.markdown("---")
-    st.markdown("### 🔐 Session Info")
-    st.info(f"**User:** Administrator\n\n**Last Login:** {datetime.now().strftime('%Y-%m-%d %H:%M')}\n\n**Status:** Active")
-    
-    if st.button("🚪 Secure Logout"):
-        st.session_state.auth = False
-        st.rerun()
+st.title("📧 Payment Mail Sender Dashboard")
+col1, col3 = st.columns(2)
+with col1:
+    st.download_button(
+        label="📥 Download Payment Sample Excel",
+        data=create_sample_excel(),
+        file_name="SampleInvoices.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
+with col3:
+    st.download_button(
+        label="📥 Download Mail Sample Excel",
+        data=create_sample_mail_excel(),
+        file_name="SampleMail.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
-# Main content based on navigation
-if selected_section == "📊 Dashboard Overview":
-    # Key Performance Indicators
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown("""
-        <div class="metric-container">
-            <h3 style="color: #1e3a8a;">📊 Total Parties</h3>
-            <h2 style="color: #3b82f6; margin: 0;">150+</h2>
-            <p style="color: #6b7280; margin: 0;">Active Vendors</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="metric-container">
-            <h3 style="color: #1e3a8a;">📧 Emails Sent</h3>
-            <h2 style="color: #10b981; margin: 0;">1,250+</h2>
-            <p style="color: #6b7280; margin: 0;">This Month</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="metric-container">
-            <h3 style="color: #1e3a8a;">✅ Success Rate</h3>
-            <h2 style="color: #10b981; margin: 0;">98.5%</h2>
-            <p style="color: #6b7280; margin: 0;">Delivery Rate</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="metric-container">
-            <h3 style="color: #1e3a8a;">💰 Amount Processed</h3>
-            <h2 style="color: #3b82f6; margin: 0;">₹2.5Cr</h2>
-            <p style="color: #6b7280; margin: 0;">This Quarter</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
+st.subheader("📁 Upload Party Emails via Excel (One Time Only)")
+with st.expander("🔑 Protected Upload", expanded=False):
+    upload_pass = st.text_input("Enter password to upload email list:", type="password")
+    if upload_pass == EMAIL_UPLOAD_PASSWORD:
+        email_upload = st.file_uploader("Upload Party Email Excel", type=["xlsx"], key="email_uploader")
+        if email_upload:
+            try:
+                email_df = pd.read_excel(email_upload)
+                if "Party Code" in email_df.columns and "Email" in email_df.columns:
+                    updated_json = []
+                    missing_emails = []
+                    for _, row in email_df.iterrows():
+                        party = str(row["Party Name"]).strip()
+                        code = str(row['Party Code']).strip()
+                        emails = str(row['Email']).strip()
+                        cc = str(row['CC']).strip() if 'CC' in row else ''
+                        updated_json.append({"PartyCode": code, "Email": emails, "PartyName": party, "CC": cc})
+                        if not emails or emails.lower() in ['nan', 'none', '']:
+                            missing_emails.append(f"{party} ({code})")
+                    save_party_emails(updated_json)
+                    st.success("✅ Party email list updated from Excel!")
+                    if missing_emails:
+                        st.warning(
+                            "⚠️ The following vendors have no email addresses in your file:\n" +
+                            "\n".join(missing_emails)
+                        )
+                else:
+                    st.error("Excel must contain 'Party Code' 'Party Name' 'CC' and 'Email' columns.")
+            except Exception as e:
+                st.error(f"Error reading Excel: {e}")
+    elif upload_pass:
+        st.error("❌ Incorrect password!")
 
-elif selected_section == "📁 Data Management":
-    st.subheader("📋 Document Templates & Sample Files")
-    st.markdown("""
-    <div class="business-card">
-        <h4>📊 Standardized Templates</h4>
-        <p>Download official Excel templates for payment reconciliation and vendor communication setup.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        st.download_button(
-            label="📊 Download Payment Reconciliation Template",
-            data=create_sample_excel(),
-            file_name="Payment_Reconciliation_Template.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-        st.markdown("*Required format for payment details processing*")
-    
-    with col2:
-        st.download_button(
-            label="👥 Download Vendor Database Template",
-            data=create_sample_mail_excel(),
-            file_name="Vendor_Database_Template.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            use_container_width=True
-        )
-        st.markdown("*Required format for vendor email management*")
+st.subheader("📁 Upload Payment Details Excel")
+uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
+if uploaded_file:
+    with open(EXCEL_PATH, "wb") as f:
+        f.write(uploaded_file.getbuffer())
+    st.success("Excel uploaded. Processing...")
 
-elif selected_section == "📧 Communication Center":
-    st.markdown("""
-    <div class="business-card">
-        <h3>📧 Vendor Communication Management</h3>
-        <p>Streamlined payment reconciliation communication with automated email processing and tracking.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Step 1: Vendor Database Management
-    st.subheader("👥 Step 1: Vendor Database Management")
-    st.markdown("""
-    <div class="warning-box">
-        <strong>🔒 Restricted Access:</strong> Only authorized personnel can modify vendor contact information.
-    </div>
-    """, unsafe_allow_html=True)
-    
-    with st.expander("🔐 Database Administration Panel", expanded=False):
-        upload_pass = st.text_input("🔑 Administrator Authorization Code", type="password", placeholder="Enter secure access code")
-        if upload_pass == EMAIL_UPLOAD_PASSWORD:
-            email_upload = st.file_uploader("📊 Upload Vendor Database (Excel Format)", type=["xlsx"], key="email_uploader")
-            if email_upload:
-                try:
-                    email_df = pd.read_excel(email_upload)
-                    if "Party Code" in email_df.columns and "Email" in email_df.columns:
-                        updated_json = []
-                        missing_emails = []
-                        for _, row in email_df.iterrows():
-                            party = str(row["Party Name"]).strip()
-                            code = str(row['Party Code']).strip()
-                            emails = str(row['Email']).strip()
-                            cc = str(row['CC']).strip() if 'CC' in row else ''
-                            updated_json.append({"PartyCode": code, "Email": emails, "PartyName": party, "CC": cc})
-                            if not emails or emails.lower() in ['nan', 'none', '']:
-                                missing_emails.append(f"{party} ({code})")
-                        save_party_emails(updated_json)
-                        st.markdown('<div class="success-box">✅ Vendor database successfully updated!</div>', unsafe_allow_html=True)
-                        if missing_emails:
-                            st.warning(f"⚠️ {len(missing_emails)} vendors missing email addresses")
-                    else:
-                        st.error("❌ Invalid file format. Required columns: Party Code, Party Name, Email, CC")
-                except Exception as e:
-                    st.error(f"❌ File processing error: {e}")
-        elif upload_pass:
-            st.error("❌ Access Denied: Invalid authorization code")
+    payment_df, debit_df = load_excel(EXCEL_PATH)
+    st.subheader("Payment Details Sheet Columns")
+    st.write(payment_df.columns.tolist())
+    st.subheader("Debit Notes Sheet Columns")
+    st.write(debit_df.columns.tolist())
+    party_emails = load_party_emails()
+    st.subheader("📬 Party Emails")
+    party_names = [e['PartyCode'] for e in party_emails]
+    selected_party = st.selectbox("Select Party to Edit Emails", [""] + party_names)
+    if selected_party:
+        idx = next((i for i, e in enumerate(party_emails) if e['PartyCode'] == selected_party), None)
+        if idx is not None:
+            new_email = st.text_input(f"Emails for {selected_party}", party_emails[idx]['Email'])
+            pwd_confirm = st.text_input(f"Confirm Password to Update Emails for {selected_party}", type="password")
+            if st.button("Update Emails"):
+                if pwd_confirm == "password":
+                    party_emails[idx]['Email'] = new_email
+                    save_party_emails(party_emails)
+                    st.success(f"Emails updated for {selected_party}")
+                else:
+                    st.error("Incorrect password. Emails not updated.")
 
-    # Step 2: Payment Data Processing
-    st.subheader("📊 Step 2: Payment Data Processing")
-    uploaded_file = st.file_uploader("📁 Upload Payment Reconciliation File", type=["xlsx"], help="Upload Excel file containing payment details and debit notes")
-    
-    if uploaded_file:
-        with open(EXCEL_PATH, "wb") as f:
-            f.write(uploaded_file.getbuffer())
+    st.subheader("📧 Gmail Settings")
+    gmail_user = st.text_input("Your Gmail")
+    gmail_pwd = st.text_input("App Password (Use Gmail App Password)", type="password")
+
+    if gmail_user and gmail_pwd:
+        matched_results, skips, parties_without_email = match_data(payment_df, debit_df, party_emails)
         
-        st.markdown('<div class="success-box">✅ File uploaded successfully. Processing data...</div>', unsafe_allow_html=True)
-
-        payment_df, debit_df = load_excel(EXCEL_PATH)
-        
-        # Data validation summary
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("""
-            <div class="business-card">
-                <h4>📊 Payment Details Sheet</h4>
-                <p><strong>Records:</strong> {}</p>
-                <p><strong>Columns:</strong> {}</p>
-            </div>
-            """.format(len(payment_df), len(payment_df.columns)), unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-            <div class="business-card">
-                <h4>📋 Debit Notes Sheet</h4>
-                <p><strong>Records:</strong> {}</p>
-                <p><strong>Columns:</strong> {}</p>
-            </div>
-            """.format(len(debit_df), len(debit_df.columns)), unsafe_allow_html=True)
-        
-        party_emails = load_party_emails()
-        
-        # Step 3: Email Configuration
-        st.subheader("📧 Step 3: Email Configuration")
-        gmail_user = st.text_input("📧 Corporate Email Address", placeholder="your.email@company.com")
-        gmail_pwd = st.text_input("🔒 Email Application Password", type="password", help="Use Gmail App Password for security")
-
-        if gmail_user and gmail_pwd:
-            with st.spinner("🔄 Processing payment reconciliation data..."):
-                matched_results, skips, parties_without_email = match_data(payment_df, debit_df, party_emails)
+        # Display parties without email addresses in card format
+        if parties_without_email:
+            st.subheader("⚠️ Parties Without Email Addresses")
             
-            # Data Quality Assessment
-            st.subheader("📈 Data Quality Assessment")
-            col1, col2, col3, col4 = st.columns(4)
+            # Summary metrics
+            col1, col2, col3 = st.columns(3)
             with col1:
-                st.metric("✅ Processed Parties", len(matched_results))
+                st.metric("Total Parties", len(parties_without_email))
             with col2:
-                st.metric("⏭️ Skipped Parties", len(skips))
+                total_payment_records = sum(party['payment_count'] for party in parties_without_email)
+                st.metric("Total Payment Records", total_payment_records)
             with col3:
-                st.metric("⚠️ Missing Email", len(parties_without_email))
-            with col4:
-                success_rate = (len(matched_results) / (len(matched_results) + len(skips)) * 100) if (len(matched_results) + len(skips)) > 0 else 0
-                st.metric("📊 Success Rate", f"{success_rate:.1f}%")
+                avg_records = total_payment_records / len(parties_without_email) if parties_without_email else 0
+                st.metric("Avg Records per Party", f"{avg_records:.1f}")
             
             st.markdown("---")
             
-            # Quality Issues Display
-            if parties_without_email or skips:
-                st.subheader("⚠️ Quality Issues Requiring Attention")
+            # Show parties without email in card format
+            st.subheader("📋 Parties Requiring Email Setup")
+            
+            # Create columns for better layout
+            cols_per_row = 2
+            email_columns = st.columns(cols_per_row)
+            
+            for i, party in enumerate(parties_without_email):
+                col_idx = i % cols_per_row
                 
-                # Parties without email addresses
-                if parties_without_email:
-                    st.markdown("### 📧 Vendors Missing Email Addresses")
-                    
-                    cols_per_row = 2
-                    email_columns = st.columns(cols_per_row)
-                    
-                    for i, party in enumerate(parties_without_email):
-                        col_idx = i % cols_per_row
+                with email_columns[col_idx]:
+                    # Create a card-like container
+                    with st.container():
+                        st.markdown(f"""
+                        <div style="
+                            background-color: #fff3cd; 
+                            border: 1px solid #ffeaa7; 
+                            border-radius: 8px; 
+                            padding: 15px; 
+                            margin: 5px 0;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        ">
+                            <h4 style="color: #856404; margin: 0 0 8px 0;">🏢 {party['party_name']}</h4>
+                            <p style="margin: 2px 0; color: #6c757d;"><strong>Code:</strong> {party['party_code']}</p>
+                            <p style="margin: 2px 0; color: #6c757d;"><strong>Payment Records:</strong> {party['payment_count']}</p>
+                            <div style="
+                                background-color: #f8d7da; 
+                                color: #721c24; 
+                                padding: 5px 10px; 
+                                border-radius: 4px; 
+                                font-size: 0.85em; 
+                                margin-top: 8px;
+                                text-align: center;
+                            ">
+                                ⚠️ Email Required
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                
+                # Add new row after every cols_per_row items
+                if (i + 1) % cols_per_row == 0 and i < len(parties_without_email) - 1:
+                    st.markdown("---")
+            
+            # Add download option for parties without email
+            email_missing_df = pd.DataFrame(parties_without_email)
+            csv_no_email = email_missing_df.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Parties Without Email (CSV)",
+                data=csv_no_email,
+                file_name="parties_without_email.csv",
+                mime="text/csv"
+            )
+            
+            st.markdown("---")
+            
+            # Add action section
+            st.subheader("🔧 Next Steps")
+            st.info("""
+            **To enable email sending for these parties:**
+            1. Update the party email list via the protected upload section above
+            2. Ensure each party has a valid email address
+            3. Re-upload the payment Excel file to reprocess
+            """)
+        
+        st.subheader("✅ Ready to Email")
+        for entry in matched_results:
+            with st.expander(entry['party_code']):
+                st.json(entry)
+        # Display skipped parties in card format
+        if skips:
+            st.subheader("⏭️ Skipped Parties Summary")
+            
+            # Count skip reasons
+            skip_reasons = {}
+            for line in skips:
+                reason = line.split(" — ")[1] if " — " in line else "Unknown reason"
+                skip_reasons[reason] = skip_reasons.get(reason, 0) + 1
+            
+            # Show summary
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Total Skipped", len(skips))
+            with col2:
+                st.metric("Unique Reasons", len(skip_reasons))
+            with col3:
+                processed = len(matched_results)
+                st.metric("Processed", processed)
+            
+            st.markdown("---")
+            
+            # Show skip reasons breakdown
+            if len(skip_reasons) > 1:
+                st.subheader("📊 Skip Reasons Breakdown")
+                for reason, count in skip_reasons.items():
+                    st.info(f"**{count} parties**: {reason}")
+                st.markdown("---")
+            
+            # Show detailed skip list in card format
+            st.subheader("📋 Detailed Skip List")
+            
+            # Create columns for better layout
+            cols_per_row = 2
+            skip_columns = st.columns(cols_per_row)
+            
+            for i, line in enumerate(skips):
+                col_idx = i % cols_per_row
+                
+                with skip_columns[col_idx]:
+                    # Parse the skip line to extract party code and reason
+                    if " — " in line:
+                        party_info, reason = line.split(" — ", 1)
+                        party_code = party_info.replace("SKIPPED: ", "").strip()
                         
-                        with email_columns[col_idx]:
+                        # Create a card-like container
+                        with st.container():
                             st.markdown(f"""
                             <div style="
-                                background-color: #fef3cd; 
-                                border: 1px solid #fbbf24; 
+                                background-color: #f8f9fa; 
+                                border: 1px solid #dee2e6; 
                                 border-radius: 8px; 
                                 padding: 15px; 
                                 margin: 5px 0;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
                             ">
-                                <h4 style="color: #92400e; margin: 0;">🏢 {party['party_name']}</h4>
-                                <p style="margin: 5px 0;"><strong>Code:</strong> {party['party_code']}</p>
-                                <p style="margin: 5px 0;"><strong>Records:</strong> {party['payment_count']}</p>
-                                <div style="background-color: #dc2626; color: white; padding: 5px; border-radius: 4px; text-align: center;">
-                                    ⚠️ Email Configuration Required
-                                </div>
+                                <h4 style="color: #dc3545; margin: 0 0 8px 0;">❌ {party_code}</h4>
+                                <p style="margin: 0; color: #6c757d; font-size: 0.9em;">{reason}</p>
                             </div>
                             """, unsafe_allow_html=True)
-
-                # Skipped parties
-                if skips:
-                    st.markdown("### ⏭️ Parties Excluded from Processing")
-                    
-                    skip_reasons = {}
-                    for line in skips:
-                        reason = line.split(" — ")[1] if " — " in line else "Unknown reason"
-                        skip_reasons[reason] = skip_reasons.get(reason, 0) + 1
-                    
-                    if len(skip_reasons) > 1:
-                        st.markdown("#### 📊 Exclusion Reasons Analysis")
-                        for reason, count in skip_reasons.items():
-                            st.info(f"**{count} parties:** {reason}")
+                    else:
+                        # Fallback for lines without proper format
+                        with st.container():
+                            st.error(f"📋 {line}")
                 
-                st.markdown("---")
+                # Add new row after every cols_per_row items
+                if (i + 1) % cols_per_row == 0 and i < len(skips) - 1:
+                    st.markdown("---")
             
-            # Communication Preview
-            if matched_results:
-                st.subheader("✅ Communication Ready Parties")
-                st.markdown(f"**{len(matched_results)} parties** are ready for payment reconciliation communication.")
-                
-                # Bulk Actions
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    if st.button("🚀 Initiate Bulk Communication", use_container_width=True, type="primary"):
-                        # Email sending logic here
-                        pass
-                with col2:
-                    if st.button("📊 Generate Detailed Report", use_container_width=True):
-                        # Report generation logic
-                        pass
-                with col3:
-                    if st.button("📁 Export Processing Summary", use_container_width=True):
-                        # Export logic
-                        pass
-                
-                # Party Preview
-                with st.expander("🔍 Preview Communication Data", expanded=False):
-                    for i, entry in enumerate(matched_results[:3]):  # Show first 3 as preview
-                        st.markdown(f"#### Party {i+1}: {entry['party_code']}")
-                        st.json(entry)
-                        if i < 2:  # Don't show separator after last item
-                            st.markdown("---")
+            # Add download option for skip list
+            skip_data = []
+            for line in skips:
+                if " — " in line:
+                    party_info, reason = line.split(" — ", 1)
+                    party_code = party_info.replace("SKIPPED: ", "").strip()
+                    skip_data.append({"Party Code": party_code, "Skip Reason": reason})
+            
+            if skip_data:
+                skip_df = pd.DataFrame(skip_data)
+                csv = skip_df.to_csv(index=False)
+                st.download_button(
+                    label="📥 Download Skip List (CSV)",
+                    data=csv,
+                    file_name="skipped_parties.csv",
+                    mime="text/csv"
+                )
 
-elif selected_section == "📈 Reports & Analytics":
-    st.markdown("""
-    <div class="business-card">
-        <h3>📈 Financial Analytics & Reporting</h3>
-        <p>Comprehensive analysis of payment reconciliation performance and vendor communication metrics.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # KPI Dashboard
-    st.subheader("📊 Key Performance Indicators")
-    
-    # Mock data for demonstration
-    col1, col2, col3, col4 = st.columns(4)
-    
-    with col1:
-        st.markdown("""
-        <div class="metric-container">
-            <h4 style="color: #1e3a8a;">📧 Total Communications</h4>
-            <h2 style="color: #3b82f6;">1,247</h2>
-            <p style="color: #6b7280;">This Quarter</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("""
-        <div class="metric-container">
-            <h4 style="color: #1e3a8a;">✅ Success Rate</h4>
-            <h2 style="color: #10b981;">97.8%</h2>
-            <p style="color: #6b7280;">Delivery Rate</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col3:
-        st.markdown("""
-        <div class="metric-container">
-            <h4 style="color: #1e3a8a;">💰 Amount Processed</h4>
-            <h2 style="color: #3b82f6;">₹2.5Cr</h2>
-            <p style="color: #6b7280;">Quarter Total</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with col4:
-        st.markdown("""
-        <div class="metric-container">
-            <h4 style="color: #1e3a8a;">⏱️ Avg Response Time</h4>
-            <h2 style="color: #10b981;">2.3hrs</h2>
-            <p style="color: #6b7280;">Processing Time</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    # Report Generation
-    st.subheader("📋 Generate Custom Reports")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        report_type = st.selectbox("📊 Report Type", [
-            "Payment Reconciliation Summary",
-            "Vendor Communication Status",
-            "Financial Performance Analysis",
-            "System Usage Analytics",
-            "Compliance Report"
-        ])
-        
-        date_range = st.date_input("📅 Date Range", value=(datetime.now() - pd.Timedelta(days=30), datetime.now()))
-        
-    with col2:
-        format_type = st.selectbox("📄 Export Format", ["PDF", "Excel", "CSV", "PowerPoint"])
-        
-        if st.button("🔄 Generate Report", use_container_width=True):
-            st.info("🔄 Generating report... This may take a few moments.")
-            # Report generation logic would go here
+        # ------------- SMTP FIXED EMAIL LOOP ------------
+        if st.button("Send Emails"):
+            log_lines = []
+            sent_count = 0
+            failed_count = 0
+            skips = []
+            log_lines.append("=== Emails Sent Successfully ===")
+            for entry in matched_results:
+                party_code = entry['party_code']
+                party_name = next((e['PartyName'] for e in party_emails if e['PartyCode'] == party_code), 'Unknown Party')
+                cc_str = next((e.get('CC', '') for e in party_emails if e['PartyCode'] == party_code), '')
+                cc_emails = [email.strip() for email in cc_str.split(',')] if cc_str else []
+                invoice_list = list({item['InvoiceNo'] for item in entry['payments'] + entry['debits'] if 'InvoiceNo' in item})
+                html_body = generate_email_body(party_code, entry['payments'], entry['debits'])
+                try:
+                    send_email(
+                        gmail_user,
+                        gmail_pwd,
+                        entry['emails'],
+                        f"Payment Reconciliation for {party_code} - {party_name}",
+                        html_body,
+                        cc=cc_emails
+                    )
+                    st.success(f"✅ Email sent to {party_name} ({party_code})")
+                    log_lines.append(f"Party Code: {party_code} | Party Name: {party_name} | Emails: {', '.join(entry['emails'])} | CC: {', '.join(cc_emails)}")
+                    sent_count += 1
+                except Exception as e:
+                    st.error(f"❌ Failed for {party_code}: {e}")
+                    log_lines.append(f"FAILED: {party_code} | Error: {e}")
+                    failed_count += 1
+                time.sleep(random.uniform(1, 5))  # Random delay to avoid SMTP connection refused errors
+            log_lines.append("\n=== Skipped Parties ===")
+            if skips:
+                for line in skips:
+                    log_lines.append(line)
+            else:
+                log_lines.append("None")
+            with open("FinalEmailLog.txt", "w", encoding="utf-8") as log_file:
+                for line in log_lines:
+                    log_file.write(line + "\n")
+            st.success(f"✅ Emails sent: {sent_count}, Failed: {failed_count}, Skipped: {len(skips)}")
+        # ----------- END SMTP SENDING LOOP ------------
 
-elif selected_section == "⚙️ System Settings":
-    st.markdown("""
-    <div class="business-card">
-        <h3>⚙️ System Administration</h3>
-        <p>Configure system parameters, security settings, and operational preferences.</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Security Settings
-    st.subheader("🔒 Security Configuration")
-    
-    with st.expander("🔐 Access Control Settings", expanded=False):
-        st.markdown("#### Current Security Status")
-        col1, col2 = st.columns(2)
-        with col1:
-            st.success("✅ Authentication: Active")
-            st.success("✅ Session Management: Enabled")
-        with col2:
-            st.success("✅ Data Encryption: SSL/TLS")
-            st.success("✅ Audit Logging: Active")
-    
-    # System Information
-    st.subheader("ℹ️ System Information")
-    
-    system_info = {
-        "System Version": "v2.1.0",
-        "Last Updated": "2024-12-01",
-        "Database Status": "🟢 Connected",
-        "Email Service": "🟢 Gmail API Active",
-        "Storage Used": "2.3 GB / 10 GB",
-        "Active Sessions": "1"
-    }
-    
-    for key, value in system_info.items():
-        col1, col2 = st.columns([1, 2])
-        with col1:
-            st.text(key)
-        with col2:
-            st.text(value)
-
-# Professional Footer
-st.markdown("""
-<div class="footer">
-    <p>© 2024 EasySell Service Pvt. Ltd. | Financial Operations Portal | Version 2.1.0</p>
-    <p>For technical support: it-support@easysell.in | +91-XXX-XXX-XXXX</p>
-</div>
-""", unsafe_allow_html=True)
+        st.subheader("📂 Download All Party-wise Sheets in One Excel File")
+        if 'matched_results' in locals() and matched_results:
+            partywise_output = BytesIO()
+            with pd.ExcelWriter(partywise_output, engine='xlsxwriter') as writer:
+                for party in matched_results:
+                    party_code = party['party_code']
+                    df = pd.DataFrame(party['payments'])
+                    df_debit = pd.DataFrame(party['debits'])
+                    sheet_name_payment = f"{party_code[:28]}_Pay"
+                    sheet_name_debit = f"{party_code[:28]}_Debit"
+                    df.to_excel(writer, index=False, sheet_name=sheet_name_payment)
+                    if not df_debit.empty:
+                        df_debit.to_excel(writer, index=False, sheet_name=sheet_name_debit)
+            partywise_output.seek(0)
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            filename = f"All_Partywise_Payments_{timestamp}.xlsx"
+            st.download_button(
+                label="📥 Download All Party-wise Payments (Excel)",
+                data=partywise_output,
+                file_name=filename,
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        with open("FinalEmailLog.txt", "rb") as log_file:
+            st.download_button(
+                label="📄 Download Final Email Log",
+                data=log_file,
+                file_name="FinalEmailLog.txt",
+                mime="text/plain"
+            )
+st.subheader("📊 Convert Final Email Log to Excel")
+if os.path.exists("FinalEmailLog.txt"):
+    with open("FinalEmailLog.txt", "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    output = BytesIO()
+    workbook = xlsxwriter.Workbook(output)
+    worksheet = workbook.add_worksheet("Email Log")
+    headers = ["Status", "Party Code", "Party Name", "Emails / Error"]
+    for col, header in enumerate(headers):
+        worksheet.write(0, col, header)
+    row_num = 1
+    for line in lines:
+        line = line.strip()
+        if line.startswith("Party Code:"):
+            parts = line.replace("Party Code:", "").split("|")
+            party_code = parts[0].strip()
+            party_name = parts[1].replace("Party Name:", "").strip() if len(parts) > 1 else ""
+            emails = parts[2].replace("Emails:", "").strip() if len(parts) > 2 else ""
+            worksheet.write_row(row_num, 0, ["SENT", party_code, party_name, emails])
+            row_num += 1
+        elif line.startswith("FAILED:"):
+            parts = line.replace("FAILED:", "").split("|")
+            party_code = parts[0].strip()
+            error = parts[1].replace("Error:", "").strip() if len(parts) > 1 else ""
+            worksheet.write_row(row_num, 0, ["FAILED", party_code, "", error])
+            row_num += 1
+        elif line.startswith("SKIPPED:"):
+            worksheet.write_row(row_num, 0, ["SKIPPED", "", "", line])
+            row_num += 1
+    workbook.close()
+    output.seek(0)
+    timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    filename = f"FinalEmailLog_{timestamp}.xlsx"
+    st.download_button(
+        label="📥 Download Log as Excel",
+        data=output,
+        file_name=filename,
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )
 
 def create_partywise_zip(send_data):
     zip_buffer = BytesIO()
