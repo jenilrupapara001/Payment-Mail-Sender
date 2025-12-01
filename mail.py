@@ -136,28 +136,47 @@ def match_data(payment_df, debit_df, party_emails):
     skip_log_lines = []
     parties_without_email = []
     
+    # Check for different column names that might represent party code/name
+    payment_party_col = None
+    if 'Party Code' in payment_df.columns:
+        payment_party_col = 'Party Code'
+    elif 'Party Name' in payment_df.columns:
+        payment_party_col = 'Party Name'
+    
+    debit_party_col = None
+    if 'Party Code' in debit_df.columns:
+        debit_party_col = 'Party Code'
+    elif 'Party Name' in debit_df.columns:
+        debit_party_col = 'Party Name'
+    
     # First, identify parties in payment sheet that have no email
-    payment_party_codes = set(payment_df['Party Code'].astype(str).str.strip()) if 'Party Code' in payment_df.columns else set()
-    for party_code in payment_party_codes:
-        if party_code not in email_map or not email_map[party_code]["to"] or all(email.strip().lower() in ['nan', 'none', ''] for email in email_map[party_code]["to"]):
-            party_name = party_code  # Default to party code if name not found
-            # Try to find party name from party_emails
-            for party in party_emails:
-                if party["PartyCode"].strip() == party_code.strip():
-                    party_name = party["PartyName"]
-                    break
-            parties_without_email.append({
-                "party_code": party_code,
-                "party_name": party_name,
-                "payment_count": len(payment_df[payment_df['Party Code'].astype(str).str.strip() == party_code.strip()])
-            })
+    parties_without_email = []
+    if payment_party_col:
+        payment_party_codes = set(payment_df[payment_party_col].astype(str).str.strip())
+        for party_code in payment_party_codes:
+            if party_code not in email_map or not email_map[party_code]["to"] or all(email.strip().lower() in ['nan', 'none', ''] for email in email_map[party_code]["to"]):
+                party_name = party_code  # Default to party code if name not found
+                # Try to find party name from party_emails
+                for party in party_emails:
+                    if party["PartyCode"].strip() == party_code.strip():
+                        party_name = party["PartyName"]
+                        break
+                parties_without_email.append({
+                    "party_code": party_code,
+                    "party_name": party_name,
+                    "payment_count": len(payment_df[payment_df[payment_party_col].astype(str).str.strip() == party_code.strip()])
+                })
     
     for party_code, email_data in email_map.items():
-        party_payments = payment_df[payment_df['Party Code'].astype(str).str.strip() == party_code.strip()]
+        if payment_party_col:
+            party_payments = payment_df[payment_df[payment_party_col].astype(str).str.strip() == party_code.strip()]
+        else:
+            party_payments = pd.DataFrame()  # Empty DataFrame if no party column found
+        
         if party_payments.empty:
             skip_log_lines.append(f"SKIPPED: {party_code} — No payment rows found in Payment Sheet")
             continue
-        related_debits = debit_df[debit_df['Party Code'].astype(str).str.strip() == party_code.strip()] if 'Party Code' in debit_df.columns else pd.DataFrame()
+        related_debits = debit_df[debit_df[debit_party_col].astype(str).str.strip() == party_code.strip()] if debit_party_col else pd.DataFrame()
         total_debit_amount = related_debits['Amount'].sum() if not related_debits.empty else 0
         party_payments['Debit Amount'] = party_payments['Debit Amount'].fillna(0)
         party_debit_sum = party_payments['Debit Amount'].sum()
