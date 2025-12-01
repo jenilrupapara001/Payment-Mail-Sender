@@ -239,28 +239,28 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         bank_payment = row.get('Bank Payment', '')
         if isinstance(bank_payment, pd.Timestamp) or (' ' in str(bank_payment)):
             bank_payment = str(bank_payment).split(' ')[0]
-        # Handle NaN and missing values
+        # Handle NaN and missing values for display
         inv_no = row.get('Inv. No.', '')
         pur_date = row.get('Pur. Date', '')
-        total_inv_amount = row.get('Total Inv. Amount', '')
+        total_inv_display = row.get('Total Inv. Amount', '')
         debit_note_val = row.get('Debit Amount', '')
-        net_amount = row.get('Net Amount', '')
+        net_amount_display = row.get('Net Amount', '')
         
         # Replace NaN and empty values with '-'
         inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
         pur_date = '-' if pd.isna(pur_date) or pur_date == '' else str(pur_date)
-        total_inv_amount = '-' if pd.isna(total_inv_amount) or total_inv_amount == '' else str(total_inv_amount)
+        total_inv_display = '-' if pd.isna(total_inv_display) or total_inv_display == '' else str(total_inv_display)
         debit_note_val = '-' if pd.isna(debit_note_val) or debit_note_val == '' else str(debit_note_val)
-        net_amount = '-' if pd.isna(net_amount) or net_amount == '' else str(net_amount)
+        net_amount_display = '-' if pd.isna(net_amount_display) or net_amount_display == '' else str(net_amount_display)
         bank_payment = '-' if pd.isna(bank_payment) or bank_payment == '' else str(bank_payment)
         
         payment_html += f"""
         <tr style="text-align:center; border:1px solid #ccc;">
           <td style="border:1px solid #ccc;">{inv_no}</td>
           <td style="border:1px solid #ccc;">{pur_date}</td>
-          <td style="border:1px solid #ccc;">{total_inv_amount}</td>
+          <td style="border:1px solid #ccc;">{total_inv_display}</td>
           <td style="border:1px solid #ccc;">{debit_note_val}</td>
-          <td style="border:1px solid #ccc;">{net_amount}</td>
+          <td style="border:1px solid #ccc;">{net_amount_display}</td>
           <td style="border:1px solid #ccc;">{bank_payment}</td>
           <td style="border:1px solid #ccc;">{payment_date_str}</td>
         </tr>"""
@@ -551,9 +551,9 @@ if uploaded_file:
         for entry in matched_results:
             with st.expander(entry['party_code']):
                 st.json(entry)
-        # Display skipped parties in card format
+        # Display skipped parties (minimal format)
         if skips:
-            st.subheader("⏭️ Skipped Parties Summary")
+            st.subheader("⏭️ Skipped Parties")
             
             # Count skip reasons
             skip_reasons = {}
@@ -566,59 +566,13 @@ if uploaded_file:
             with col1:
                 st.metric("Total Skipped", len(skips))
             with col2:
-                st.metric("Unique Reasons", len(skip_reasons))
+                st.metric("Processed", len(matched_results))
             with col3:
-                processed = len(matched_results)
-                st.metric("Processed", processed)
+                st.metric("Success Rate", f"{(len(matched_results)/(len(matched_results)+len(skips))*100):.1f}%")
             
-            st.markdown("---")
-            
-            # Show skip reasons breakdown
-            if len(skip_reasons) > 1:
-                st.subheader("📊 Skip Reasons Breakdown")
-                for reason, count in skip_reasons.items():
-                    st.info(f"**{count} parties**: {reason}")
-                st.markdown("---")
-            
-            # Show detailed skip list in card format
-            st.subheader("📋 Detailed Skip List")
-            
-            # Create columns for better layout
-            cols_per_row = 2
-            skip_columns = st.columns(cols_per_row)
-            
-            for i, line in enumerate(skips):
-                col_idx = i % cols_per_row
-                
-                with skip_columns[col_idx]:
-                    # Parse the skip line to extract party code and reason
-                    if " — " in line:
-                        party_info, reason = line.split(" — ", 1)
-                        party_code = party_info.replace("SKIPPED: ", "").strip()
-                        
-                        # Create a card-like container
-                        with st.container():
-                            st.markdown(f"""
-                            <div style="
-                                background-color: #f8f9fa; 
-                                border: 1px solid #dee2e6; 
-                                border-radius: 8px; 
-                                padding: 15px; 
-                                margin: 5px 0;
-                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                            ">
-                                <h4 style="color: #dc3545; margin: 0 0 8px 0;">❌ {party_code}</h4>
-                                <p style="margin: 0; color: #6c757d; font-size: 0.9em;">{reason}</p>
-                            </div>
-                            """, unsafe_allow_html=True)
-                    else:
-                        # Fallback for lines without proper format
-                        with st.container():
-                            st.error(f"📋 {line}")
-                
-                # Add new row after every cols_per_row items
-                if (i + 1) % cols_per_row == 0 and i < len(skips) - 1:
-                    st.markdown("---")
+            # Show skip reasons in compact format
+            for reason, count in skip_reasons.items():
+                st.warning(f"**{count} parties**: {reason}")
             
             # Add download option for skip list
             skip_data = []
