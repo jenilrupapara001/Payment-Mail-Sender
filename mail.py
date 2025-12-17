@@ -76,6 +76,8 @@ EMAIL_TEMPLATE = """
       <thead>
         <tr style="background-color: #f2f2f2; border: 2px solid #333;">
           <th style="border: 1px solid #333; padding: 8px; ">Purchase Bill</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Main Advised No.</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Seller Advised No.</th>
           <th style="border: 1px solid #ddd; padding: 8px; ">Transaction Type</th>
           <th style="border: 1px solid #ddd; padding: 8px; ">Pur. Date</th>
           <th style="border: 1px solid #ddd; padding: 8px; ">Credit (CR)</th>
@@ -153,6 +155,8 @@ def load_excel(file_path):
     col_date = pick(["Invoice Date", "Date"])
     col_total_with_tax = pick(["Total With Tax", "Total With Tax ", "Total_with_tax"])
     col_total_with_tax_alt = pick(["Zoho Total With Tax", "Zoho total with tax"])
+    col_main_advise_no = pick(["Main Advised No", "Main Advise No"])
+    col_seller_advised_no = pick(["Seller Advised No", "Seller Advise No"])
     col_dr = pick(["DR", "Debit", "Debit Amount"])
     col_cr = pick(["CR", "Credit", "Credit Amount"])
     col_category = pick(["Category"])
@@ -176,6 +180,10 @@ def load_excel(file_path):
         missing_cols.append("Bill No")
     if col_date is None:
         missing_cols.append("Invoice Date")
+    if col_main_advise_no is None:
+        missing_cols.append("Main Advised No")
+    if col_seller_advised_no is None:
+        missing_cols.append("Seller Advised No")
     # For amounts we allow fallbacks; collect missing for messaging only
     amt_missing = []
     if col_total_with_tax is None and col_total_with_tax_alt is None:
@@ -245,6 +253,8 @@ def load_excel(file_path):
         "Party Name": seller_series,
         "Party Code": party_code_series,
         "Inv. No.": bill_series,
+        "Main Advised No.": raw_df[col_main_advise_no] if col_main_advise_no else "",
+        "Seller Advised No.": raw_df[col_seller_advised_no] if col_seller_advised_no else "",
         "Pur. Date": date_series,
         "Total Inv. Amount": total_with_tax_series,
         "Debit Amount": dr_series,
@@ -263,6 +273,8 @@ def load_excel(file_path):
         "Party Name",
         "Party Code",
         "Inv. No.",
+        "Main Advised No.",
+        "Seller Advised No.",
         "Pur. Date",
         "Total Inv. Amount",
         "Debit Amount",
@@ -424,10 +436,14 @@ def generate_email_body(party_code, payment_rows, debit_rows):
 
         # Handle NaN and missing values for display
         inv_no = row.get('Inv. No.', '')
+        main_adv = row.get('Main Advised No.', '')
+        seller_adv = row.get('Seller Advised No.', '')
         pur_date = row.get('Pur. Date', '')
         txn_type = row.get('Transaction Type', '')
         
         inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
+        main_adv_display = '-' if pd.isna(main_adv) or main_adv == '' else str(main_adv)
+        seller_adv_display = '-' if pd.isna(seller_adv) or seller_adv == '' else str(seller_adv)
         pur_date = '-' if pd.isna(pur_date) or pur_date == '' else str(pur_date)
         debit_val_display = '-' if pd.isna(dr) or dr == '' else f"{dr:.2f}"
         credit_val_display = '-' if pd.isna(cr) or cr == '' else f"{cr:.2f}"
@@ -437,6 +453,8 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         payment_html += f"""
         <tr style="text-align:center; border:1px solid #ccc;">
           <td style="border:1px solid #ccc;">{inv_no}</td>
+          <td style="border:1px solid #ccc;">{main_adv_display}</td>
+          <td style="border:1px solid #ccc;">{seller_adv_display}</td>
           <td style="border:1px solid #ccc;">{txn_type_display}</td>
           <td style="border:1px solid #ccc;">{pur_date}</td>
           <td style="border:1px solid #ccc;">{credit_val_display}</td>
@@ -447,7 +465,7 @@ def generate_email_body(party_code, payment_rows, debit_rows):
     final_balance = total_credit - total_debit
     payment_html += f"""
     <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
-      <td colspan="3" style="border:1px solid #ccc;">Total</td>
+      <td colspan="5" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
       <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
       <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
       <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
