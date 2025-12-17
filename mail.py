@@ -463,11 +463,10 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         </tr>"""
     # Final balance = total credit - total debit (as in sheet Balance column)
     final_balance = total_credit - total_debit
+    # Show a single summary row where Balance is the net (CR - DR)
     payment_html += f"""
     <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
-      <td colspan="5" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
-      <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
-      <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
+      <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
       <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
     </tr>"""
     html_body = template.replace("[Party Name]", party_name)
