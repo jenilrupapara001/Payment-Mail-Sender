@@ -76,12 +76,11 @@ EMAIL_TEMPLATE = """
       <thead>
         <tr style="background-color: #f2f2f2; border: 2px solid #333;">
           <th style="border: 1px solid #333; padding: 8px; ">Purchase Bill</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Transaction Type</th>
           <th style="border: 1px solid #ddd; padding: 8px; ">Pur. Date</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Amount Rs.</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Debit Note</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Total Payment</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Bank Payment</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Payment Date</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Credit (CR)</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Debit (DR)</th>
+          <th style="border: 1px solid #ddd; padding: 8px; ">Balance</th>
         </tr>
       </thead>
       <tbody>
@@ -115,15 +114,201 @@ def check_password(input_pwd):
 
 def load_excel(file_path):
     wb = pd.ExcelFile(file_path)
-    payment_df = wb.parse("Payment Details")
-    debit_df = wb.parse("Debit Notes")
-    payment_df.columns = payment_df.columns.str.strip()
+    sheet_names = [s.strip() for s in wb.sheet_names]
+
+    # Legacy two-sheet format: keep existing behavior
+    if "Payment Details" in sheet_names and "Debit Notes" in sheet_names:
+        payment_df = wb.parse("Payment Details")
+        debit_df = wb.parse("Debit Notes")
+        payment_df.columns = payment_df.columns.str.strip()
+        debit_df.columns = debit_df.columns.str.strip()
+        return payment_df, debit_df
+
+    # New single-sheet format with columns highlighted in yellow
+    # Expected headers (case-insensitive): Seller Name, Channel, Transaction Type, Category,
+    # Bill No, Invoice Date, Quantity, Total Without Tax, Total Tax, Total With Tax,
+    # Zoho Total Without Tax, Zoho Total Tax, Zoho Total With Tax, Balance Due,
+    # Zoho Status, CR, DR, Balance
+    sheet_name = sheet_names[0]
+
+    # Detect merged summary rows and offset header (seen in vendor Payment Details.xlsx)
+    raw_df_preview = wb.parse(sheet_name, header=None, nrows=5)
+    header_row = 0
+    first_cell = str(raw_df_preview.iloc[0, 0]) if not pd.isna(raw_df_preview.iloc[0, 0]) else ""
+    if "Seller Name:" in first_cell and "Advised No" in first_cell:
+        header_row = 2  # actual headers at row index 2 (0-based)
+
+    raw_df = wb.parse(sheet_name, header=header_row)
+    raw_df.columns = raw_df.columns.str.strip()
+
+    def pick(col_candidates):
+        lower_map = {c.lower(): c for c in raw_df.columns}
+        for cand in col_candidates:
+            if cand.lower() in lower_map:
+                return lower_map[cand.lower()]
+        return None
+
+    col_seller = pick(["Seller Name", "Party Name"])
+    col_bill = pick(["Bill No", "Invoice No", "Inv. No."])
+    col_date = pick(["Invoice Date", "Date"])
+    col_total_with_tax = pick(["Total With Tax", "Total With Tax ", "Total_with_tax"])
+    col_total_with_tax_alt = pick(["Zoho Total With Tax", "Zoho total with tax"])
+    col_dr = pick(["DR", "Debit", "Debit Amount"])
+    col_cr = pick(["CR", "Credit", "Credit Amount"])
+    col_category = pick(["Category"])
+    col_channel = pick(["Channel"])
+    col_txn_type = pick(["Transaction Type", "Transaction", "Transacation Type"])
+    col_quantity = pick(["Quantity", "Qty"])
+    col_total_wo_tax = pick(["Total Without Tax", "Total Without Tax "])
+    col_total_tax = pick(["Total Tax"])
+    col_zoho_wo_tax = pick(["Zoho Total Without Tax"])
+    col_zoho_tax = pick(["Zoho Total Tax"])
+    col_zoho_with_tax = pick(["Zoho Total With Tax"])
+    col_balance_due = pick(["Balance Due"])
+    col_zoho_status = pick(["Zoho Status"])
+    col_balance = pick(["Balance"])
+
+    # Basic required columns
+    missing_cols = []
+    if col_seller is None:
+        missing_cols.append("Seller Name")
+    if col_bill is None:
+        missing_cols.append("Bill No")
+    if col_date is None:
+        missing_cols.append("Invoice Date")
+    # For amounts we allow fallbacks; collect missing for messaging only
+    amt_missing = []
+    if col_total_with_tax is None and col_total_with_tax_alt is None:
+        amt_missing.append("Total With Tax")
+    if col_dr is None:
+        amt_missing.append("DR")
+    if col_cr is None:
+        amt_missing.append("CR")
+    if missing_cols:
+        raise ValueError(f"Missing required columns in the uploaded sheet: {', '.join(missing_cols)}. Expected at least Seller Name, Bill No, Invoice Date.")
+
+    # Normalize numeric columns
+    def num(series):
+        return pd.to_numeric(series, errors="coerce").fillna(0)
+
+    # Drop summary/empty rows
+    raw_df = raw_df.dropna(how="all")
+    if col_seller:
+        raw_df = raw_df[~raw_df[col_seller].isna()]
+
+    # Fallback order for totals
+    if col_total_with_tax:
+        total_with_tax_series = num(raw_df[col_total_with_tax])
+    elif col_total_with_tax_alt:
+        total_with_tax_series = num(raw_df[col_total_with_tax_alt])
+    elif col_total_wo_tax:
+        total_with_tax_series = num(raw_df[col_total_wo_tax])
+    else:
+        total_with_tax_series = pd.Series([0] * len(raw_df))
+
+    dr_series = num(raw_df[col_dr]) if col_dr else pd.Series([0] * len(raw_df))
+    cr_series = num(raw_df[col_cr]) if col_cr else pd.Series([0] * len(raw_df))
+
+    # If there is no explicit total column but we do have CR/DR, derive a pseudo total
+    if (col_total_with_tax is None and col_total_with_tax_alt is None and col_total_wo_tax is None) and (col_cr or col_dr):
+        total_with_tax_series = cr_series + dr_series
+
+    # Base series for seller/bill/date
+    seller_series = raw_df[col_seller].fillna("").astype(str).str.strip()
+    bill_series = raw_df[col_bill].fillna("").astype(str).str.strip()
+    date_series = raw_df[col_date]
+
+    # Filter out only total/blank rows (keep all rows with valid seller name)
+    filtered_idx = ~(
+        (bill_series.str.lower().isin(["", "total", "nan"])) 
+        & (seller_series.str.strip() == "")
+    )
+    seller_series = seller_series[filtered_idx]
+    bill_series = bill_series[filtered_idx]
+    date_series = date_series[filtered_idx]
+    raw_df = raw_df.loc[filtered_idx]
+
+    # Derive Party Code from seller name where possible (e.g. "731-AUROMIN-Amazon" -> "731", "731s-AUROMIN-demo" -> "731")
+    import re
+    def derive_code(val: str) -> str:
+        if not val:
+            return ""
+        m = re.match(r"(\d+)", val.strip())
+        if m:
+            return m.group(1)
+        # fallback to chunk before first dash
+        return val.split("-")[0].strip() if "-" in val else val.strip()
+    party_code_series = seller_series.apply(derive_code)
+    party_code_series = party_code_series.where(party_code_series != "", seller_series)
+
+    payment_df = pd.DataFrame({
+        "Party Name": seller_series,
+        "Party Code": party_code_series,
+        "Inv. No.": bill_series,
+        "Pur. Date": date_series,
+        "Total Inv. Amount": total_with_tax_series,
+        "Debit Amount": dr_series,
+        # Net = Total - DR - CR (treat CR as credit note)
+        "Net Amount": total_with_tax_series - dr_series - cr_series,
+        # Bank Payment shows CR so existing email layout still reflects reduction
+        "Bank Payment": cr_series,
+        "Payment Date": date_series,
+        # Provide a debit/credit note reference when present
+        "Debit Note": bill_series.where(dr_series > 0, "").fillna(""),
+        "Transaction Type": raw_df[col_txn_type] if col_txn_type else ""
+    })
+
+    # Trim to only the needed columns for mail logic
+    keep_cols = [
+        "Party Name",
+        "Party Code",
+        "Inv. No.",
+        "Pur. Date",
+        "Total Inv. Amount",
+        "Debit Amount",
+        "Net Amount",
+        "Bank Payment",
+        "Payment Date",
+        "Debit Note",
+        "Transaction Type",
+    ]
+    payment_df = payment_df[keep_cols]
+
+    # Build a synthetic Debit Notes sheet from DR amounts
+    debit_rows = []
+    for _, row in raw_df.iterrows():
+        seller_val = str(row[col_seller]).strip() if pd.notna(row[col_seller]) else ""
+        party_code_val = derive_code(seller_val)
+        party_code_val = party_code_val or seller_val
+        party_name_val = seller_val
+        bill_no = str(row[col_bill]).strip() if pd.notna(row[col_bill]) else ""
+        inv_date = row[col_date]
+        dr_amt = pd.to_numeric(row[col_dr], errors="coerce")
+        if pd.notna(dr_amt) and dr_amt > 0:
+            debit_rows.append({
+                "Party Name": party_name_val,
+                "Party Code": party_code_val,
+                "Date": inv_date,
+                "Return Invoice No.": bill_no,
+                "Amount": float(dr_amt),
+            })
+        cr_amt = pd.to_numeric(row[col_cr], errors="coerce") if col_cr else 0
+        if pd.notna(cr_amt) and cr_amt > 0:
+            debit_rows.append({
+                "Party Name": party_name_val,
+                "Party Code": party_code_val,
+                "Date": inv_date,
+                "Return Invoice No.": f"{bill_no} (CR)",
+                "Amount": float(cr_amt) * -1.0,  # credit note reduces balance
+            })
+    debit_df = pd.DataFrame(debit_rows) if debit_rows else pd.DataFrame(columns=["Party Code", "Party Name", "Date", "Return Invoice No.", "Amount"])
     debit_df.columns = debit_df.columns.str.strip()
     return payment_df, debit_df
 
 def match_data(payment_df, debit_df, party_emails):
+    # Match strictly on Party Name (Seller Name) instead of Party Code
     email_map = {
-        e["PartyCode"].strip(): {
+        e["PartyName"].strip(): {
             "to": [email.strip() for email in e["Email"].split(",")],
             "cc": [cc.strip() for cc in e["CC"].split(",")] if "CC" in e and pd.notna(e["CC"]) else []
         }
@@ -136,18 +321,18 @@ def match_data(payment_df, debit_df, party_emails):
     skip_log_lines = []
     parties_without_email = []
     
-    # Check for different column names that might represent party code/name
+    # Prefer matching by Party Name (Seller Name)
     payment_party_col = None
-    if 'Party Code' in payment_df.columns:
-        payment_party_col = 'Party Code'
-    elif 'Party Name' in payment_df.columns:
+    if 'Party Name' in payment_df.columns:
         payment_party_col = 'Party Name'
+    elif 'Party Code' in payment_df.columns:
+        payment_party_col = 'Party Code'
     
     debit_party_col = None
-    if 'Party Code' in debit_df.columns:
-        debit_party_col = 'Party Code'
-    elif 'Party Name' in debit_df.columns:
+    if 'Party Name' in debit_df.columns:
         debit_party_col = 'Party Name'
+    elif 'Party Code' in debit_df.columns:
+        debit_party_col = 'Party Code'
     
     # First, identify parties in payment sheet that have no email
     parties_without_email = []
@@ -158,8 +343,8 @@ def match_data(payment_df, debit_df, party_emails):
                 party_name = party_code  # Default to party code if name not found
                 # Try to find party name from party_emails
                 for party in party_emails:
-                    if party["PartyCode"].strip() == party_code.strip():
-                        party_name = party["PartyName"]
+                    if party["PartyName"].strip() == party_code.strip():
+                        party_name = party["PartyName"]  # keep same; already name
                         break
                 parties_without_email.append({
                     "party_code": party_code,
@@ -177,7 +362,9 @@ def match_data(payment_df, debit_df, party_emails):
             skip_log_lines.append(f"SKIPPED: {party_code} — No payment rows found in Payment Sheet")
             continue
         related_debits = debit_df[debit_df[debit_party_col].astype(str).str.strip() == party_code.strip()] if debit_party_col else pd.DataFrame()
-        total_debit_amount = related_debits['Amount'].sum() if not related_debits.empty else 0
+        # Only compare positive debit notes against payment debit amounts; credits are negative and excluded from this check
+        total_debit_amount = related_debits[related_debits['Amount'] > 0]['Amount'].sum() if not related_debits.empty else 0
+        party_payments = party_payments.copy()
         party_payments['Debit Amount'] = party_payments['Debit Amount'].fillna(0)
         party_debit_sum = party_payments['Debit Amount'].sum()
 
@@ -185,23 +372,10 @@ def match_data(payment_df, debit_df, party_emails):
             skip_log_lines.append(f"SKIPPED: {party_code} — Debit Amount mismatch between payment sheet and debit sheet")
             continue
 
+        # Include ALL payment rows for this party (no filtering based on debit note matching)
         payment_issues = []
         for _, row in party_payments.iterrows():
-            debit_note = row.get('Debit Note') if 'Debit Note' in row else None
-            if debit_note is None or (pd.isna(debit_note) or debit_note == ''):
-                payment_issues.append(row.to_dict())
-            else:
-                matched_debit_rows = related_debits[related_debits['Return Invoice No.'] == debit_note] if 'Return Invoice No.' in related_debits.columns else pd.DataFrame()
-                if matched_debit_rows.empty:
-                    payment_issues.append(row.to_dict())
-                else:
-                    amount_in_debit_sheet = matched_debit_rows.iloc[0]['Amount']
-                    if abs(row['Net Amount'] - amount_in_debit_sheet) < 0.01:
-                        payment_issues.append(row.to_dict())
-                    else:
-                        mismatch_log_lines.append(
-                            f"Mismatch DebitNote: {debit_note} | Party: {party_code} | Payment Sheet Amount: {row['Net Amount']} | Debit Sheet Amount: {amount_in_debit_sheet}"
-                        )
+            payment_issues.append(row.to_dict())
         if payment_issues:
             result.append({
                 'party_code': party_code,
@@ -224,126 +398,62 @@ def match_data(payment_df, debit_df, party_emails):
     return result, skip_log_lines, parties_without_email
 
 def generate_email_body(party_code, payment_rows, debit_rows):
-    party_name = next((e['PartyName'] for e in party_emails if e['PartyCode'] == party_code), 'Unknown Party')
+    # party_code is actually PartyName since we match by name now
+    party_name = next((e['PartyName'] for e in party_emails if e['PartyName'] == party_code), party_code if party_code else 'Unknown Party')
     template = EMAIL_TEMPLATE
     payment_html = ""
-    total_inv_amount = 0
-    total_net_amount = 0
-    total_bank_payment = 0            
+    total_credit = 0.0
+    total_debit = 0.0
+    running_balance = 0.0
     for row in payment_rows:
-        payment_date = row.get('Payment Date', '')
+        # Raw numeric values for CR / DR
+        debit_val_num = row.get('Debit Amount', 0)
+        credit_val_num = row.get('Bank Payment', 0)
         try:
-            payment_date_str = pd.to_datetime(payment_date).strftime('%Y-%m-%d')
-        except Exception:
-            payment_date_str = str(payment_date).split(" ")[0]
-        bank_payment = row.get('Bank Payment', '')
-        if isinstance(bank_payment, pd.Timestamp) or (' ' in str(bank_payment)):
-            bank_payment = str(bank_payment).split(' ')[0]
+            dr = float(debit_val_num) if not pd.isna(debit_val_num) and debit_val_num != '' else 0.0
+        except (ValueError, TypeError):
+            dr = 0.0
+        try:
+            cr = float(credit_val_num) if not pd.isna(credit_val_num) and credit_val_num != '' else 0.0
+        except (ValueError, TypeError):
+            cr = 0.0
+
+        total_credit += cr
+        total_debit += dr
+        running_balance += cr - dr
+
         # Handle NaN and missing values for display
         inv_no = row.get('Inv. No.', '')
         pur_date = row.get('Pur. Date', '')
-        total_inv_display = row.get('Total Inv. Amount', '')
-        debit_note_val = row.get('Debit Amount', '')
-        net_amount_display = row.get('Net Amount', '')
+        txn_type = row.get('Transaction Type', '')
         
-        # Replace NaN and empty values with '-'
         inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
         pur_date = '-' if pd.isna(pur_date) or pur_date == '' else str(pur_date)
-        total_inv_display = '-' if pd.isna(total_inv_display) or total_inv_display == '' else str(total_inv_display)
-        debit_note_val = '-' if pd.isna(debit_note_val) or debit_note_val == '' else str(debit_note_val)
-        net_amount_display = '-' if pd.isna(net_amount_display) or net_amount_display == '' else str(net_amount_display)
-        bank_payment = '-' if pd.isna(bank_payment) or bank_payment == '' else str(bank_payment)
+        debit_val_display = '-' if pd.isna(dr) or dr == '' else f"{dr:.2f}"
+        credit_val_display = '-' if pd.isna(cr) or cr == '' else f"{cr:.2f}"
+        txn_type_display = '-' if pd.isna(txn_type) or txn_type == '' else str(txn_type)
+        balance_display = f"{running_balance:.2f}"
         
         payment_html += f"""
         <tr style="text-align:center; border:1px solid #ccc;">
           <td style="border:1px solid #ccc;">{inv_no}</td>
+          <td style="border:1px solid #ccc;">{txn_type_display}</td>
           <td style="border:1px solid #ccc;">{pur_date}</td>
-          <td style="border:1px solid #ccc;">{total_inv_display}</td>
-          <td style="border:1px solid #ccc;">{debit_note_val}</td>
-          <td style="border:1px solid #ccc;">{net_amount_display}</td>
-          <td style="border:1px solid #ccc;">{bank_payment}</td>
-          <td style="border:1px solid #ccc;">{payment_date_str}</td>
+          <td style="border:1px solid #ccc;">{credit_val_display}</td>
+          <td style="border:1px solid #ccc;">{debit_val_display}</td>
+          <td style="border:1px solid #ccc;">{balance_display}</td>
         </tr>"""
-        # Handle NaN values for calculations
-        total_inv_val = row.get('Total Inv. Amount', 0)
-        net_amount_val = row.get('Net Amount', 0)
-        bank_payment_val = row.get('Bank Payment', 0)
-        
-        # Convert to float, replacing NaN with 0
-        try:
-            total_inv_amount += float(total_inv_val) if not pd.isna(total_inv_val) and total_inv_val != '' else 0
-        except (ValueError, TypeError):
-            total_inv_amount += 0
-            
-        try:
-            total_net_amount += float(net_amount_val) if not pd.isna(net_amount_val) and net_amount_val != '' else 0
-        except (ValueError, TypeError):
-            total_net_amount += 0
-            
-        try:
-            total_bank_payment += float(bank_payment_val) if not pd.isna(bank_payment_val) and bank_payment_val != '' else 0
-        except (ValueError, TypeError):
-            total_bank_payment += 0
+    # Final balance = total credit - total debit (as in sheet Balance column)
+    final_balance = total_credit - total_debit
     payment_html += f"""
     <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
-      <td colspan="2" style="border:1px solid #ccc;">Total</td>
-      <td style="border:1px solid #ccc;">{total_inv_amount:.2f}</td>
-      <td style="border:1px solid #ccc;">-</td>
-      <td style="border:1px solid #ccc;">{total_net_amount:.2f}</td>
-      <td style="border:1px solid #ccc;">{total_bank_payment:.2f}</td>
-      <td style="border:1px solid #ccc;">-</td>
+      <td colspan="3" style="border:1px solid #ccc;">Total</td>
+      <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
+      <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
+      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
     </tr>"""
     html_body = template.replace("[Party Name]", party_name)
     html_body = html_body.replace("<!-- Dynamic payment rows inserted here -->", payment_html)
-    if debit_rows:
-        debit_html = """
-        <h3>Return/Debit Details</h3>
-        <table style="border-collapse: collapse; width: auto;text-align:center">
-          <thead>
-            <tr style="background-color: #f2f2f2; border: 2px solid #333;">
-              <th style="border: 2px solid #333; padding: 8px;">Date</th>
-              <th style="border: 2px solid #333; padding: 8px;">Return Invoice No.</th>
-              <th style="border: 2px solid #333; padding: 8px;">Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-        """
-        total_debit_amount = 0
-        for row in debit_rows:
-            date_str = row.get('Date', '')
-            return_inv_no = row.get('Return Invoice No.', '')
-            amount_val = row.get('Amount', 0)
-            
-            # Handle NaN and empty values
-            date_str = '-' if pd.isna(date_str) or date_str == '' else str(date_str)
-            return_inv_no = '-' if pd.isna(return_inv_no) or return_inv_no == '' else str(return_inv_no)
-            
-            try:
-                date_str = pd.to_datetime(date_str).strftime("%Y-%m-%d") if date_str != '-' else '-'
-            except Exception:
-                pass
-            
-            try:
-                amount = float(amount_val) if not pd.isna(amount_val) and amount_val != '' else 0
-                total_debit_amount += amount
-            except (ValueError, TypeError):
-                amount = 0
-            
-            debit_html += f"""
-            <tr style="border: 1px solid #ccc; text-align: center;">
-              <td style="border:1px solid #ccc;">{date_str}</td>
-              <td style="border:1px solid #ccc;">{return_inv_no}</td>
-              <td style="border:1px solid #ccc;">{amount:.2f}</td>
-            </tr>"""
-        debit_html += f"""
-        <tr style="border:1px solid #ccc; background-color: #f9f9f9;">
-          <td colspan="2" style="text-align:right; font-weight:bold; border:1px solid #ccc;">Total Debit Amount:</td>
-          <td style="border:1px solid #ccc; text-align:center; font-weight:bold;">{total_debit_amount:.2f}</td>
-        </tr>
-        </tbody>
-        </table>
-        """
-        html_body = html_body.replace("</body>", debit_html + "</body>")
     closing_note = """
     <br><br>
     <p><strong>🔔 Important Note:</strong> If you have any discrepancies or concerns regarding the above payment summary, please raise the issue within 7 days. No changes or claims will be entertained after this period.</p>
@@ -600,9 +710,9 @@ if uploaded_file:
             skips = []
             log_lines.append("=== Emails Sent Successfully ===")
             for entry in matched_results:
-                party_code = entry['party_code']
-                party_name = next((e['PartyName'] for e in party_emails if e['PartyCode'] == party_code), 'Unknown Party')
-                cc_str = next((e.get('CC', '') for e in party_emails if e['PartyCode'] == party_code), '')
+                party_code = entry['party_code']  # This is actually PartyName since we match by name
+                party_name = next((e['PartyName'] for e in party_emails if e['PartyName'] == party_code), party_code if party_code else 'Unknown Party')
+                cc_str = next((e.get('CC', '') for e in party_emails if e['PartyName'] == party_code), '')
                 cc_emails = [email.strip() for email in cc_str.split(',')] if cc_str else []
                 invoice_list = list({item['InvoiceNo'] for item in entry['payments'] + entry['debits'] if 'InvoiceNo' in item})
                 html_body = generate_email_body(party_code, entry['payments'], entry['debits'])
