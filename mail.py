@@ -338,13 +338,26 @@ def load_excel(file_path):
     return payment_df, debit_df
 
 def match_data(payment_df, debit_df, party_emails):
-    # Match on Party Name (Seller Name), case-insensitive
+    # Helper to normalize names for matching:
+    # - strip leading/trailing spaces
+    # - ignore case
+    # - ignore internal whitespace (so \"123 - Sample - Amazon\" == \"123-Sample-Amazon\")
+    import re
+
+    def normalize_name(name: str) -> str:
+        if name is None:
+            return ""
+        # collapse all whitespace and remove it
+        collapsed = re.sub(r"\s+", "", str(name))
+        return collapsed.strip().lower()
+
+    # Match on Party Name (Seller Name), case-insensitive and whitespace-insensitive
     email_map = {}
     for e in party_emails:
         name = str(e.get("PartyName", "")).strip()
         if not name:
             continue
-        key = name.lower()
+        key = normalize_name(name)
         email_map[key] = {
             "to": [email.strip() for email in str(e.get("Email", "")).split(",")],
             "cc": [cc.strip() for cc in str(e.get("CC", "")).split(",")] if "CC" in e and pd.notna(e["CC"]) else [],
@@ -375,26 +388,26 @@ def match_data(payment_df, debit_df, party_emails):
     if payment_party_col:
         payment_party_names = set(payment_df[payment_party_col].astype(str).str.strip())
         for party_name_val in payment_party_names:
-            key = party_name_val.strip().lower()
+            key = normalize_name(party_name_val)
             if key not in email_map or not email_map[key]["to"] or all(email.strip().lower() in ['nan', 'none', ''] for email in email_map[key]["to"]):
                 party_name = party_name_val or "Unknown"
                 parties_without_email.append({
                     "party_code": party_name_val,
                     "party_name": party_name,
-                    "payment_count": len(payment_df[payment_df[payment_party_col].astype(str).str.strip().str.lower() == key])
+                    "payment_count": len(payment_df[payment_df[payment_party_col].astype(str).apply(normalize_name) == key])
                 })
     
     for name_key, email_data in email_map.items():
         party_code = email_data.get("display_name", name_key)
         if payment_party_col:
-            party_payments = payment_df[payment_df[payment_party_col].astype(str).str.strip().str.lower() == name_key]
+            party_payments = payment_df[payment_df[payment_party_col].astype(str).apply(normalize_name) == name_key]
         else:
             party_payments = pd.DataFrame()  # Empty DataFrame if no party column found
         
         if party_payments.empty:
             skip_log_lines.append(f"SKIPPED: {party_code} — No payment rows found in Payment Sheet")
             continue
-        related_debits = debit_df[debit_df[debit_party_col].astype(str).str.strip().str.lower() == name_key] if debit_party_col else pd.DataFrame()
+        related_debits = debit_df[debit_df[debit_party_col].astype(str).apply(normalize_name) == name_key] if debit_party_col else pd.DataFrame()
         # Only compare positive debit notes against payment debit amounts; credits are negative and excluded from this check
         total_debit_amount = related_debits[related_debits['Amount'] > 0]['Amount'].sum() if not related_debits.empty else 0
         party_payments = party_payments.copy()
@@ -432,9 +445,17 @@ def match_data(payment_df, debit_df, party_emails):
 
 def generate_email_body(party_code, payment_rows, debit_rows):
     # party_code is actually PartyName (case-insensitive)
-    lookup_key = str(party_code or "").strip().lower()
+    import re
+
+    def normalize_name(name: str) -> str:
+        if name is None:
+            return ""
+        collapsed = re.sub(r"\s+", "", str(name))
+        return collapsed.strip().lower()
+
+    lookup_key = normalize_name(party_code)
     party_name = next(
-        (e['PartyName'] for e in party_emails if str(e.get('PartyName', '')).strip().lower() == lookup_key),
+        (e['PartyName'] for e in party_emails if normalize_name(e.get('PartyName', '')) == lookup_key),
         party_code if party_code else 'Unknown Party'
     )
     template = EMAIL_TEMPLATE
