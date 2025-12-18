@@ -463,7 +463,15 @@ def generate_email_body(party_code, payment_rows, debit_rows):
         </tr>"""
     # Final balance = total credit - total debit (as in sheet Balance column)
     final_balance = total_credit - total_debit
-    # Show a single summary row where Balance is the net (CR - DR)
+    # First show Total row with CR, DR, and Balance totals
+    payment_html += f"""
+    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+      <td colspan="5" style="border:1px solid #ccc;">Total</td>
+      <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
+      <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
+      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
+    </tr>"""
+    # Then show Bank Final Amount row with just the final balance
     payment_html += f"""
     <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
       <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
