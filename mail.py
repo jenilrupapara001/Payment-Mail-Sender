@@ -102,7 +102,26 @@ def load_party_emails():
         with open(JSON_PATH, 'w') as f:
             json.dump(sample, f, indent=2)
     with open(JSON_PATH, 'r') as f:
-        return json.load(f)
+        raw = json.load(f)
+
+    # Normalize keys so the rest of the app can always rely on:
+    # PartyCode, PartyName, Email, CC
+    normalized = []
+    for entry in raw:
+        if not isinstance(entry, dict):
+            continue
+        party_code = entry.get("PartyCode", entry.get("Party Code", ""))
+        party_name = entry.get("PartyName", entry.get("Party Name", ""))
+        email = entry.get("Email", "")
+        cc = entry.get("CC", entry.get("Cc", ""))
+
+        normalized.append({
+            "PartyCode": str(party_code).strip() if party_code is not None else "",
+            "PartyName": str(party_name).strip() if party_name is not None else "",
+            "Email": str(email).strip() if email is not None else "",
+            "CC": str(cc).strip() if cc is not None else "",
+        })
+    return normalized
 
 def save_party_emails(data):
     with open(JSON_PATH, 'w') as f:
