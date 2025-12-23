@@ -30,6 +30,15 @@ connection_string = (
     "Trusted_Connection=yes;"
 )
 
+def safe_date_format(date_val):
+    if pd.isna(date_val) or date_val == '' or date_val is None:
+        return ''
+    try:
+        dt = pd.to_datetime(date_val)
+        return dt.strftime('%d/%m/%Y')
+    except:
+        return ''
+
 def create_sample_excel():
     sample_payment = pd.DataFrame({
         "Party Name": ["Alpha Corp", "Beta Ltd"],
@@ -79,12 +88,9 @@ EMAIL_TEMPLATE = """
         <tr style="background-color: #f2f2f2; border: 2px solid #333;">
           <th style="border:1px solid #333; padding:8px;">Invoice No</th>
           <th style="border:1px solid #333; padding:8px;">Invoice Date</th>
-          <th style="border:1px solid #333; padding:8px;">Main Advised No.</th>
-          <th style="border:1px solid #333; padding:8px;">Seller Advised No.</th>
-          <th style="border:1px solid #333; padding:8px;">Transaction Type</th>
-          <th style="border:1px solid #333; padding:8px;">Credit (CR)</th>
-          <th style="border:1px solid #333; padding:8px;">Debit (DR)</th>
-          <th style="border:1px solid #333; padding:8px;">Balance</th>
+          <th style="border:1px solid #333; padding:8px;">Payment Date</th>
+          <th style="border:1px solid #333; padding:8px;">Amount</th>
+          <th style="border:1px solid #333; padding:8px;">Remarks</th>
         </tr>
       </thead>
       <tbody>
@@ -249,7 +255,7 @@ def load_excel(file_path):
     seller_series = raw_df[col_seller].fillna("").astype(str).str.strip()
     bill_series = raw_df[col_bill].fillna("").astype(str).str.strip()
     date_series = raw_df[col_date]
-    payment_date_series = date_series
+    payment_date_series = raw_df[col_payment_date] if col_payment_date else pd.Series([None] * len(raw_df))
 
     # Filter out only total/blank rows (keep all rows with valid seller name)
     filtered_idx = ~(
@@ -458,78 +464,27 @@ def generate_email_body(party_code, payment_rows, debit_rows):
     party_name = party_code or "Unknown Party"
 
     payment_html = ""
-    total_credit = 0.0
-    total_debit = 0.0
-    running_balance = 0.0
-    payment_dates = []
-
     for row in payment_rows:
-        dr = float(row.get("Debit Amount", 0) or 0)
-        cr = float(row.get("Bank Payment", 0) or 0)
+        inv_no = row.get('Inv. No.', '')
+        inv_date = safe_date_format(row.get('Pur. Date', ''))
+        payment_date = safe_date_format(row.get('Payment Date', ''))
+        amount = row.get('Bank Payment', 0) or row.get('Net Amount', 0)
+        remarks = row.get('Transaction Type', '')
 
-        total_credit += cr
-        total_debit += dr
-        running_balance += cr - dr
-
-        inv_no = row.get("Inv. No.", "-")
-        inv_date = row.get("Pur. Date", "")
-        inv_date = (
-            pd.to_datetime(inv_date).strftime("%d/%m/%Y")
-            if pd.notna(inv_date) else "-"
-        )
-
-        main_adv = row.get("Main Advised No.", "-")
-        seller_adv = row.get("Seller Advised No.", "-")
-        txn_type = row.get("Transaction Type", "-")
+        inv_no_display = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
+        inv_date_display = inv_date or 'N/A'
+        payment_date_display = payment_date or 'N/A'
+        amount_display = f"{amount:.2f}" if amount else '-'
+        remarks_display = '-' if pd.isna(remarks) or remarks == '' else str(remarks)
 
         payment_html += f"""
-        <tr style="text-align:center;">
-          <td style="border:1px solid #ccc;">{inv_no}</td>
-          <td style="border:1px solid #ccc;">{inv_date}</td>
-          <td style="border:1px solid #ccc;">{main_adv}</td>
-          <td style="border:1px solid #ccc;">{seller_adv}</td>
-          <td style="border:1px solid #ccc;">{txn_type}</td>
-          <td style="border:1px solid #ccc;">{cr:.2f}</td>
-          <td style="border:1px solid #ccc;">{dr:.2f}</td>
-          <td style="border:1px solid #ccc;">{running_balance:.2f}</td>
-        </tr>
-        """
-
-        if row.get("Payment Date") and not pd.isna(row.get("Payment Date")):
-            payment_dates.append(pd.to_datetime(row["Payment Date"]))
-
-    final_balance = total_credit - total_debit
-
-    # TOTAL ROW
-    payment_html += f"""
-    <tr style="font-weight:bold; background:#f9f9f9; text-align:center;">
-      <td colspan="5" style="border:1px solid #ccc;">Total</td>
-      <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
-      <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
-      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
-    </tr>
-    """
-
-    # BANK FINAL AMOUNT
-    payment_html += f"""
-    <tr style="font-weight:bold; background:#f1f1f1;">
-      <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
-      <td style="border:1px solid #ccc; text-align:center;">{final_balance:.2f}</td>
-    </tr>
-    """
-
-    # PAYMENT DATE (AT END – AS REQUESTED)
-    latest_payment_date = (
-        max(payment_dates).strftime("%d/%m/%Y")
-        if payment_dates else "-"
-    )
-
-    payment_html += f"""
-    <tr style="font-weight:bold; background:#f1f1f1;">
-      <td colspan="7" style="border:1px solid #ccc; text-align:right;">Payment Date</td>
-      <td style="border:1px solid #ccc; text-align:center;">{latest_payment_date}</td>
-    </tr>
-    """
+        <tr style="text-align:center; border:1px solid #ccc;">
+          <td style="border:1px solid #ccc;">{inv_no_display}</td>
+          <td style="border:1px solid #ccc;">{inv_date_display}</td>
+          <td style="border:1px solid #ccc;">{payment_date_display}</td>
+          <td style="border:1px solid #ccc;">{amount_display}</td>
+          <td style="border:1px solid #ccc;">{remarks_display}</td>
+        </tr>"""
 
     html_body = EMAIL_TEMPLATE.replace("[Party Name]", party_name)
     html_body = html_body.replace(
@@ -629,6 +584,12 @@ if uploaded_file:
     st.success("Excel uploaded. Processing...")
 
     payment_df, debit_df = load_excel(EXCEL_PATH)
+    # Guard against date mixing
+    for _, row in payment_df.iterrows():
+        inv_date = row.get('Pur. Date', '')
+        pay_date = row.get('Payment Date', '')
+        if inv_date and pay_date and str(inv_date).strip() == str(pay_date).strip():
+            raise ValueError("Invoice Date and Payment Date must not be the same for row: " + str(row))
     st.subheader("Payment Details Sheet Columns")
     st.write(payment_df.columns.tolist())
     st.subheader("Debit Notes Sheet Columns")
