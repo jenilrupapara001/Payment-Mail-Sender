@@ -71,18 +71,20 @@ EMAIL_TEMPLATE = """
   <body style="font-family: Arial, sans-serif; color: #333;">
     <p>Dear [Party Name],</p>
     <p>Please find below the summary of your recent transactions with us:</p>
+
     <h3>Purchase & Payment Details</h3>
-    <table style="border-collapse: collapse;  width: 100%; margin-bottom: 20px;">
+
+    <table style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
       <thead>
         <tr style="background-color: #f2f2f2; border: 2px solid #333;">
-          <th style="border: 1px solid #333; padding: 8px; ">Purchase Bill</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Main Advised No.</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Seller Advised No.</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Transaction Type</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Pur. Date</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Credit (CR)</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Debit (DR)</th>
-          <th style="border: 1px solid #ddd; padding: 8px; ">Balance</th>
+          <th style="border:1px solid #333; padding:8px;">Invoice No</th>
+          <th style="border:1px solid #333; padding:8px;">Invoice Date</th>
+          <th style="border:1px solid #333; padding:8px;">Main Advised No.</th>
+          <th style="border:1px solid #333; padding:8px;">Seller Advised No.</th>
+          <th style="border:1px solid #333; padding:8px;">Transaction Type</th>
+          <th style="border:1px solid #333; padding:8px;">Credit (CR)</th>
+          <th style="border:1px solid #333; padding:8px;">Debit (DR)</th>
+          <th style="border:1px solid #333; padding:8px;">Balance</th>
         </tr>
       </thead>
       <tbody>
@@ -92,6 +94,7 @@ EMAIL_TEMPLATE = """
   </body>
 </html>
 """
+
 
 def load_party_emails():
     if not JSON_PATH.exists():
@@ -173,6 +176,7 @@ def load_excel(file_path):
     col_seller = pick(["Seller Name", "Party Name"])
     col_bill = pick(["Bill No", "Invoice No", "Inv. No."])
     col_date = pick(["Invoice Date", "Date"])
+    col_payment_date = pick(["Payment Date"])
     col_total_with_tax = pick(["Total With Tax", "Total With Tax ", "Total_with_tax"])
     col_total_with_tax_alt = pick(["Zoho Total With Tax", "Zoho total with tax"])
     col_main_advise_no = pick(["Main Advised No", "Main Advise No"])
@@ -245,6 +249,7 @@ def load_excel(file_path):
     seller_series = raw_df[col_seller].fillna("").astype(str).str.strip()
     bill_series = raw_df[col_bill].fillna("").astype(str).str.strip()
     date_series = raw_df[col_date]
+    payment_date_series = date_series
 
     # Filter out only total/blank rows (keep all rows with valid seller name)
     filtered_idx = ~(
@@ -282,7 +287,7 @@ def load_excel(file_path):
         "Net Amount": total_with_tax_series - dr_series - cr_series,
         # Bank Payment shows CR so existing email layout still reflects reduction
         "Bank Payment": cr_series,
-        "Payment Date": date_series,
+        "Payment Date": payment_date_series,
         # Provide a debit/credit note reference when present
         "Debit Note": bill_series.where(dr_series > 0, "").fillna(""),
         "Transaction Type": raw_df[col_txn_type] if col_txn_type else ""
@@ -444,108 +449,100 @@ def match_data(payment_df, debit_df, party_emails):
     return result, skip_log_lines, parties_without_email
 
 def generate_email_body(party_code, payment_rows, debit_rows):
-    # party_code is actually PartyName (case-insensitive)
+    import pandas as pd
     import re
 
     def normalize_name(name: str) -> str:
-        if name is None:
-            return ""
-        collapsed = re.sub(r"\s+", "", str(name))
-        return collapsed.strip().lower()
+        return re.sub(r"\s+", "", str(name)).lower().strip()
 
-    lookup_key = normalize_name(party_code)
-    party_name = next(
-        (e['PartyName'] for e in party_emails if normalize_name(e.get('PartyName', '')) == lookup_key),
-        party_code if party_code else 'Unknown Party'
-    )
-    template = EMAIL_TEMPLATE
+    party_name = party_code or "Unknown Party"
+
     payment_html = ""
     total_credit = 0.0
     total_debit = 0.0
     running_balance = 0.0
+    payment_dates = []
+
     for row in payment_rows:
-        # Raw numeric values for CR / DR
-        debit_val_num = row.get('Debit Amount', 0)
-        credit_val_num = row.get('Bank Payment', 0)
-        try:
-            dr = float(debit_val_num) if not pd.isna(debit_val_num) and debit_val_num != '' else 0.0
-        except (ValueError, TypeError):
-            dr = 0.0
-        try:
-            cr = float(credit_val_num) if not pd.isna(credit_val_num) and credit_val_num != '' else 0.0
-        except (ValueError, TypeError):
-            cr = 0.0
+        dr = float(row.get("Debit Amount", 0) or 0)
+        cr = float(row.get("Bank Payment", 0) or 0)
 
         total_credit += cr
         total_debit += dr
         running_balance += cr - dr
 
-        # Handle NaN and missing values for display
-        inv_no = row.get('Inv. No.', '')
-        main_adv = row.get('Main Advised No.', '')
-        seller_adv = row.get('Seller Advised No.', '')
-        pur_date = row.get('Pur. Date', '')
-        txn_type = row.get('Transaction Type', '')
-        
-        inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
-        main_adv_display = '-' if pd.isna(main_adv) or main_adv == '' else str(main_adv)
-        seller_adv_display = '-' if pd.isna(seller_adv) or seller_adv == '' else str(seller_adv)
-        pur_date = '-' if pd.isna(pur_date) or pur_date == '' else str(pur_date)
-        debit_val_display = '-' if pd.isna(dr) or dr == '' else f"{dr:.2f}"
-        credit_val_display = '-' if pd.isna(cr) or cr == '' else f"{cr:.2f}"
-        txn_type_display = '-' if pd.isna(txn_type) or txn_type == '' else str(txn_type)
-        balance_display = f"{running_balance:.2f}"
-        
+        inv_no = row.get("Inv. No.", "-")
+        inv_date = row.get("Pur. Date", "")
+        inv_date = (
+            pd.to_datetime(inv_date).strftime("%d/%m/%Y")
+            if pd.notna(inv_date) else "-"
+        )
+
+        main_adv = row.get("Main Advised No.", "-")
+        seller_adv = row.get("Seller Advised No.", "-")
+        txn_type = row.get("Transaction Type", "-")
+
         payment_html += f"""
-        <tr style="text-align:center; border:1px solid #ccc;">
+        <tr style="text-align:center;">
           <td style="border:1px solid #ccc;">{inv_no}</td>
-          <td style="border:1px solid #ccc;">{main_adv_display}</td>
-          <td style="border:1px solid #ccc;">{seller_adv_display}</td>
-          <td style="border:1px solid #ccc;">{txn_type_display}</td>
-          <td style="border:1px solid #ccc;">{pur_date}</td>
-          <td style="border:1px solid #ccc;">{credit_val_display}</td>
-          <td style="border:1px solid #ccc;">{debit_val_display}</td>
-          <td style="border:1px solid #ccc;">{balance_display}</td>
-        </tr>"""
-    # Final balance = total credit - total debit (as in sheet Balance column)
+          <td style="border:1px solid #ccc;">{inv_date}</td>
+          <td style="border:1px solid #ccc;">{main_adv}</td>
+          <td style="border:1px solid #ccc;">{seller_adv}</td>
+          <td style="border:1px solid #ccc;">{txn_type}</td>
+          <td style="border:1px solid #ccc;">{cr:.2f}</td>
+          <td style="border:1px solid #ccc;">{dr:.2f}</td>
+          <td style="border:1px solid #ccc;">{running_balance:.2f}</td>
+        </tr>
+        """
+
+        if row.get("Payment Date") and not pd.isna(row.get("Payment Date")):
+            payment_dates.append(pd.to_datetime(row["Payment Date"]))
+
     final_balance = total_credit - total_debit
-    # First show Total row with CR, DR, and Balance totals
+
+    # TOTAL ROW
     payment_html += f"""
-    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+    <tr style="font-weight:bold; background:#f9f9f9; text-align:center;">
       <td colspan="5" style="border:1px solid #ccc;">Total</td>
       <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
       <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
       <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
-    </tr>"""
-    # Then show Bank Final Amount row with just the final balance
+    </tr>
+    """
+
+    # BANK FINAL AMOUNT
     payment_html += f"""
-    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+    <tr style="font-weight:bold; background:#f1f1f1;">
       <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
-      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
-    </tr>"""
-    # Get the latest payment date
-    payment_dates = [row.get('Payment Date', '') for row in payment_rows if row.get('Payment Date') and not pd.isna(row.get('Payment Date'))]
-    if payment_dates:
-        latest_date = max(pd.to_datetime(payment_dates, errors='coerce'))
-        latest_date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else '-'
-    else:
-        latest_date_str = '-'
-    # Then show Payment Date row
+      <td style="border:1px solid #ccc; text-align:center;">{final_balance:.2f}</td>
+    </tr>
+    """
+
+    # PAYMENT DATE (AT END – AS REQUESTED)
+    latest_payment_date = (
+        max(payment_dates).strftime("%d/%m/%Y")
+        if payment_dates else "-"
+    )
+
     payment_html += f"""
-    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+    <tr style="font-weight:bold; background:#f1f1f1;">
       <td colspan="7" style="border:1px solid #ccc; text-align:right;">Payment Date</td>
-      <td style="border:1px solid #ccc;">{latest_date_str}</td>
-    </tr>"""
-    html_body = template.replace("[Party Name]", party_name)
-    html_body = html_body.replace("<!-- Dynamic payment rows inserted here -->", payment_html)
-    closing_note = """
-    <br><br>
-    <p><strong>🔔 Important Note:</strong> If you have any discrepancies or concerns regarding the above payment summary, please raise the issue within 7 days. No changes or claims will be entertained after this period.</p>
-    <p>Thank you for your continued partnership.</p>
-    <p>Best regards,<br><strong>Easy Sell Service Pvt. Ltd.</strong></p>
-        """
-    html_body = html_body.replace("</body>", f"{closing_note}</body>")
+      <td style="border:1px solid #ccc; text-align:center;">{latest_payment_date}</td>
+    </tr>
+    """
+
+    html_body = EMAIL_TEMPLATE.replace("[Party Name]", party_name)
+    html_body = html_body.replace(
+        "<!-- Dynamic payment rows inserted here -->", payment_html
+    )
+
+    html_body += """
+    <p><strong>🔔 Note:</strong> Please report discrepancies within 7 days.</p>
+    <p>Regards,<br><strong>Easy Sell Service Pvt. Ltd.</strong></p>
+    """
+
     return html_body
+
 
 def send_email(gmail_user, app_password, to_emails, subject, html_body, cc=None):
     msg = MIMEMultipart('alternative')
