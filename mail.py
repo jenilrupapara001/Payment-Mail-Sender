@@ -80,17 +80,18 @@ EMAIL_TEMPLATE = """
   <body style="font-family: Arial, sans-serif; color: #333;">
     <p>Dear [Party Name],</p>
     <p>Please find below the summary of your recent transactions with us:</p>
-
     <h3>Purchase & Payment Details</h3>
-
-    <table style="border-collapse: collapse; width: 100%; margin-bottom: 20px;">
+    <table style="border-collapse: collapse;  width: 100%; margin-bottom: 20px;">
       <thead>
         <tr style="background-color: #f2f2f2; border: 2px solid #333;">
-          <th style="border:1px solid #333; padding:8px;">Invoice No</th>
-          <th style="border:1px solid #333; padding:8px;">Invoice Date</th>
-          <th style="border:1px solid #333; padding:8px;">Payment Date</th>
-          <th style="border:1px solid #333; padding:8px;">Amount</th>
-          <th style="border:1px solid #333; padding:8px;">Remarks</th>
+          <th style="border: 1px solid #333; padding: 8px; ">Purchase Bill</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Main Advised No.</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Seller Advised No.</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Transaction Type</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Pur. Date</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Credit (CR)</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Debit (DR)</th>
+          <th style="border:1px solid #ddd; padding: 8px; ">Balance</th>
         </tr>
       </thead>
       <tbody>
@@ -455,47 +456,101 @@ def match_data(payment_df, debit_df, party_emails):
     return result, skip_log_lines, parties_without_email
 
 def generate_email_body(party_code, payment_rows, debit_rows):
-    import pandas as pd
+    # party_code is actually PartyName (case-insensitive)
     import re
 
     def normalize_name(name: str) -> str:
-        return re.sub(r"\s+", "", str(name)).lower().strip()
+        if name is None:
+            return ""
+        collapsed = re.sub(r"\s+", "", str(name))
+        return collapsed.strip().lower()
 
-    party_name = party_code or "Unknown Party"
-
+    lookup_key = normalize_name(party_code)
+    party_name = next(
+        (e['PartyName'] for e in party_emails if normalize_name(e.get('PartyName', '')) == lookup_key),
+        party_code if party_code else 'Unknown Party'
+    )
+    template = EMAIL_TEMPLATE
     payment_html = ""
+    total_credit = 0.0
+    total_debit = 0.0
+    running_balance = 0.0
+    payment_dates = []
     for row in payment_rows:
+        # Raw numeric values for CR / DR
+        debit_val_num = row.get('Debit Amount', 0)
+        credit_val_num = row.get('Bank Payment', 0)
+        try:
+            dr = float(debit_val_num) if not pd.isna(debit_val_num) and debit_val_num != '' else 0.0
+        except (ValueError, TypeError):
+            dr = 0.0
+        try:
+            cr = float(credit_val_num) if not pd.isna(credit_val_num) and credit_val_num != '' else 0.0
+        except (ValueError, TypeError):
+            cr = 0.0
+
+        total_credit += cr
+        total_debit += dr
+        running_balance += cr - dr
+
+        # Handle NaN and missing values for display
         inv_no = row.get('Inv. No.', '')
-        inv_date = safe_date_format(row.get('Pur. Date', ''))
-        payment_date = safe_date_format(row.get('Payment Date', ''))
-        amount = row.get('Bank Payment', 0) or row.get('Net Amount', 0)
-        remarks = row.get('Transaction Type', '')
-
-        inv_no_display = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
-        inv_date_display = inv_date or 'N/A'
-        payment_date_display = payment_date or 'N/A'
-        amount_display = f"{amount:.2f}" if amount else '-'
-        remarks_display = '-' if pd.isna(remarks) or remarks == '' else str(remarks)
-
+        main_adv = row.get('Main Advised No.', '')
+        seller_adv = row.get('Seller Advised No.', '')
+        pur_date = safe_date_format(row.get('Pur. Date', ''))
+        txn_type = row.get('Transaction Type', '')
+        
+        inv_no = '-' if pd.isna(inv_no) or inv_no == '' else str(inv_no)
+        main_adv_display = '-' if pd.isna(main_adv) or main_adv == '' else str(main_adv)
+        seller_adv_display = '-' if pd.isna(seller_adv) or seller_adv == '' else str(seller_adv)
+        pur_date_display = pur_date or '-'
+        debit_val_display = '-' if pd.isna(dr) or dr == '' else f"{dr:.2f}"
+        credit_val_display = '-' if pd.isna(cr) or cr == '' else f"{cr:.2f}"
+        txn_type_display = '-' if pd.isna(txn_type) or txn_type == '' else str(txn_type)
+        balance_display = f"{running_balance:.2f}"
+        
         payment_html += f"""
         <tr style="text-align:center; border:1px solid #ccc;">
-          <td style="border:1px solid #ccc;">{inv_no_display}</td>
-          <td style="border:1px solid #ccc;">{inv_date_display}</td>
-          <td style="border:1px solid #ccc;">{payment_date_display}</td>
-          <td style="border:1px solid #ccc;">{amount_display}</td>
-          <td style="border:1px solid #ccc;">{remarks_display}</td>
+          <td style="border:1px solid #ccc;">{inv_no}</td>
+          <td style="border:1px solid #ccc;">{main_adv_display}</td>
+          <td style="border:1px solid #ccc;">{seller_adv_display}</td>
+          <td style="border:1px solid #ccc;">{txn_type_display}</td>
+          <td style="border:1px solid #ccc;">{pur_date_display}</td>
+          <td style="border:1px solid #ccc;">{credit_val_display}</td>
+          <td style="border:1px solid #ccc;">{debit_val_display}</td>
+          <td style="border:1px solid #ccc;">{balance_display}</td>
         </tr>"""
+        if row.get('Payment Date') and not pd.isna(row.get('Payment Date')):
+            payment_dates.append(row['Payment Date'])
 
-    html_body = EMAIL_TEMPLATE.replace("[Party Name]", party_name)
-    html_body = html_body.replace(
-        "<!-- Dynamic payment rows inserted here -->", payment_html
-    )
-
-    html_body += """
-    <p><strong>🔔 Note:</strong> Please report discrepancies within 7 days.</p>
-    <p>Regards,<br><strong>Easy Sell Service Pvt. Ltd.</strong></p>
-    """
-
+    # Final balance = total credit - total debit (as in sheet Balance column)
+    final_balance = total_credit - total_debit
+    # First show Total row with CR, DR, and Balance totals
+    payment_html += f"""
+    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+      <td colspan="5" style="border:1px solid #ccc;">Total</td>
+      <td style="border:1px solid #ccc;">{total_credit:.2f}</td>
+      <td style="border:1px solid #ccc;">{total_debit:.2f}</td>
+      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
+    </tr>"""
+    # Then show Bank Final Amount row with just the final balance
+    payment_html += f"""
+    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+      <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
+      <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
+    </tr>"""
+    html_body = template.replace("[Party Name]", party_name)
+    html_body = html_body.replace("<!-- Dynamic payment rows inserted here -->", payment_html)
+    # Payment summary after table
+    latest_payment_date = safe_date_format(max(pd.to_datetime(payment_dates, errors='coerce')) if payment_dates else None) or 'N/A'
+    html_body = html_body.replace("</table>", f"</table>\n<p><strong>Bank Payment Date:</strong> {latest_payment_date}</p>")
+    closing_note = """
+    <br><br>
+    <p><strong>🔔 Important Note:</strong> If you have any discrepancies or concerns regarding the above payment summary, please raise the issue within 7 days. No changes or claims will be entertained after this period.</p>
+    <p>Thank you for your continued partnership.</p>
+    <p>Best regards,<br><strong>Easy Sell Service Pvt. Ltd.</strong></p>
+        """
+    html_body = html_body.replace("</body>", f"{closing_note}</body>")
     return html_body
 
 
