@@ -523,6 +523,19 @@ def generate_email_body(party_code, payment_rows, debit_rows):
       <td colspan="7" style="border:1px solid #ccc; text-align:right;">Bank Final Amount</td>
       <td style="border:1px solid #ccc;">{final_balance:.2f}</td>
     </tr>"""
+    # Get the latest payment date
+    payment_dates = [row.get('Payment Date', '') for row in payment_rows if row.get('Payment Date') and not pd.isna(row.get('Payment Date'))]
+    if payment_dates:
+        latest_date = max(pd.to_datetime(payment_dates, errors='coerce'))
+        latest_date_str = latest_date.strftime('%Y-%m-%d') if pd.notna(latest_date) else '-'
+    else:
+        latest_date_str = '-'
+    # Then show Payment Date row
+    payment_html += f"""
+    <tr style="text-align:center; font-weight:bold; background-color:#f9f9f9;">
+      <td colspan="7" style="border:1px solid #ccc; text-align:right;">Payment Date</td>
+      <td style="border:1px solid #ccc;">{latest_date_str}</td>
+    </tr>"""
     html_body = template.replace("[Party Name]", party_name)
     html_body = html_body.replace("<!-- Dynamic payment rows inserted here -->", payment_html)
     closing_note = """
